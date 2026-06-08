@@ -1,0 +1,7 @@
+stability_level	dominant_signal_identity	fsf_signal_class	n_features
+highly_stable	stable_constant_identity	highly_stable_constant	1000
+highly_stable	stable_down_identity	highly_stable_down	1000
+highly_stable	stable_up_identity	highly_stable_up	1000
+instable	instable_no_stable_identity	instable	1071
+stable	stable_up_identity	stable_up	31
+weakly_stable_transitional	stable_up_identity	weakly_stable_transitional_up	898

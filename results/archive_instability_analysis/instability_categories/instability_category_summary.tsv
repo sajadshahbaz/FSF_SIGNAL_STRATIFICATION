@@ -1,0 +1,13 @@
+instability_category	n_genes	proportion
+not_instable	5348	0.35214328043721604
+des_specific_instable	3176	0.20912622637782313
+uv_specific_instable	2701	0.17784947652597616
+uv_des_shared_instable	1788	0.1177322710212682
+multi_condition_instable	435	0.02864291828537565
+lt_specific_instable	394	0.025943240929742543
+gam_specific_instable	344	0.02265095147165339
+uv_lt_shared_instable	278	0.0183051293869757
+des_lt_shared_instable	238	0.01567129782050438
+uv_gam_shared_instable	232	0.01527622308553368
+des_gam_shared_instable	223	0.014683610983077633
+gam_lt_shared_instable	30	0.0019753736748534933
