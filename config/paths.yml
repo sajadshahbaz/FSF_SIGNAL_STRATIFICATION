@@ -1,0 +1,21 @@
+project:
+  name: "FSF Signal Stratification Project"
+  root: "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
+
+directories:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  metadata: "data/metadata"
+  scripts: "scripts"
+  results: "results"
+  tables: "results/tables"
+  figures: "results/figures"
+  logs: "results/logs"
+  reports: "results/reports"
+  docs: "docs"
+  archive_review: "archive_import_review"
+
+rules:
+  hardcoded_paths_allowed: false
+  old_project_import_requires_review: true
+  framework_role: "signal_stratification_not_feature_selection"

@@ -1,0 +1,4 @@
+role	path	exists	file_size_mb	modified_time
+metadata	/media/saji/5E06441D0643F5152/phase_1/parse_meta/revised_nature_method/Simplified_Metadata_Table.csv	TRUE	0.005	2026-01-24 18:30:29
+vst_matrix	/media/saji/5E06441D0643F5152/phase_2/results/results/vst_counts_filtered.tsv	TRUE	29.126	2025-09-04 15:13:14.733486
+count_matrix	/media/saji/5E06441D0643F5152/phase_1/DE_Phase1B/x_count_filt.csv	TRUE	24.578	2025-09-04 22:38:46.616163

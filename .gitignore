@@ -1,0 +1,27 @@
+# Large analysis outputs
+results/real_data/
+results/synthetic/
+results/tables/
+results/benchmark*/
+results/logs/
+logs/
+
+# Large manuscript supplementary tables
+results/manuscript/tables/supplementary/*.tsv
+
+# Archived/generated clutter
+results/manuscript/figures/archive/
+scripts/archive_figure_dev/
+
+# Common temporary files
+*.log
+*.tmp
+*.bak
+.Rhistory
+.RData
+.DS_Store
+
+# Large annotation outputs
+*.gff3
+*.hmmscan.log
+*.faa.tsv
