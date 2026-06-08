@@ -25,3 +25,4 @@ scripts/archive_figure_dev/
 *.gff3
 *.hmmscan.log
 *.faa.tsv
+manuscript/.~lock.*#
