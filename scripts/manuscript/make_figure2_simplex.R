@@ -18,26 +18,24 @@ ternary_xy <- function(p_up, p_down, p_const) {
 }
 
 grid <- expand.grid(
-  p_up = seq(0, 1, by = 0.015),
-  p_down = seq(0, 1, by = 0.015)
+  p_up = seq(0, 1, by = 0.008),
+  p_down = seq(0, 1, by = 0.008)
 ) %>%
   mutate(p_const = 1 - p_up - p_down) %>%
   filter(p_const >= 0) %>%
   mutate(
     SSI = pmax(p_up, p_down, p_const),
-    stability_deviation = 1 - SSI,
     dominant_state = case_when(
-      p_up >= p_down & p_up >= p_const ~ "Stable up",
-      p_down >= p_up & p_down >= p_const ~ "Stable down",
-      p_const >= p_up & p_const >= p_down ~ "Stable constant"
+      p_up >= p_down & p_up >= p_const ~ "Up",
+      p_down >= p_up & p_down >= p_const ~ "Down",
+      p_const >= p_up & p_const >= p_down ~ "Constant"
     ),
     fsf_region = case_when(
-      SSI >= 0.80 & dominant_state == "Stable up" ~ "Highly stable up",
-      SSI >= 0.80 & dominant_state == "Stable down" ~ "Highly stable down",
-      SSI >= 0.80 & dominant_state == "Stable constant" ~ "Highly stable constant",
-      SSI < 0.45 ~ "Instability region",
-      SSI < 0.80 ~ "Transitional region",
-      TRUE ~ "Other"
+      SSI >= 0.90 & dominant_state == "Up" ~ "Highly stable Up",
+      SSI >= 0.90 & dominant_state == "Down" ~ "Highly stable Down",
+      SSI >= 0.90 & dominant_state == "Constant" ~ "Highly stable Constant",
+      SSI < 0.50 ~ "Instability region",
+      TRUE ~ "Transitional region"
     )
   ) %>%
   bind_cols(ternary_xy(.$p_up, .$p_down, .$p_const))
@@ -64,15 +62,15 @@ make_line <- function(type, value) {
 }
 
 guides <- bind_rows(
-  lapply(c(0.2, 0.4, 0.6, 0.8), \(v) make_line("up", v)),
-  lapply(c(0.2, 0.4, 0.6, 0.8), \(v) make_line("down", v)),
-  lapply(c(0.2, 0.4, 0.6, 0.8), \(v) make_line("const", v))
+  lapply(c(0.25, 0.50, 0.75, 0.90), \(v) make_line("up", v)),
+  lapply(c(0.25, 0.50, 0.75, 0.90), \(v) make_line("down", v)),
+  lapply(c(0.25, 0.50, 0.75, 0.90), \(v) make_line("const", v))
 )
 
 colors <- c(
-  "Highly stable up" = "#2166AC",
-  "Highly stable constant" = "#1B7837",
-  "Highly stable down" = "#E66101",
+  "Highly stable Up" = "#2166AC",
+  "Highly stable Constant" = "#1B7837",
+  "Highly stable Down" = "#E66101",
   "Transitional region" = "#7B3294",
   "Instability region" = "#B2182B"
 )
@@ -81,41 +79,56 @@ p <- ggplot() +
   geom_tile(
     data = grid %>% filter(fsf_region %in% names(colors)),
     aes(x = x, y = y, fill = fsf_region),
-    width = 0.017,
-    height = 0.017,
-    alpha = 0.82
+    width = 0.012,
+    height = 0.012,
+    alpha = 0.86
   ) +
   geom_path(
     data = guides,
-    aes(x = x, y = y, group = interaction(round(p_up, 2), round(p_down, 2), round(p_const, 2))),
+    aes(
+      x = x,
+      y = y,
+      group = interaction(round(p_up, 2), round(p_down, 2), round(p_const, 2))
+    ),
     color = "grey82",
     linewidth = 0.18,
-    alpha = 0.55
+    alpha = 0.60
   ) +
   geom_path(
     data = boundary,
     aes(x = x, y = y),
-    linewidth = 0.75,
+    linewidth = 0.90,
     color = "black"
   ) +
-  annotate("text", x = 0.50, y = 0.91, label = "P(const)", size = 5, fontface = "bold") +
-  annotate("text", x = -0.035, y = -0.035, label = "P(up)", size = 5, fontface = "bold", hjust = 0) +
-  annotate("text", x = 1.035, y = -0.035, label = "P(down)", size = 5, fontface = "bold", hjust = 1) +
-
-  annotate("text", x = 0.16, y = 0.10, label = "Highly\nstable up", size = 4.2, color = "white", fontface = "bold") +
-  annotate("text", x = 0.84, y = 0.10, label = "Highly\nstable down", size = 4.2, color = "white", fontface = "bold") +
-  annotate("text", x = 0.50, y = 0.685, label = "Highly\nstable constant", size = 4, color = "white", fontface = "bold") +
-  annotate("text", x = 0.50, y = 0.43, label = "Transitional\nregion", size = 4.1, color = "white", fontface = "bold") +
-  annotate("text", x = 0.50, y = 0.27, label = "Instability\nregion", size = 4.1, color = "white", fontface = "bold") +
-
-  scale_fill_manual(values = colors, name = "FSF region") +
+  annotate("text", x = 0.50, y = 0.91, label = "P(Constant)", size = 5, fontface = "bold") +
+  annotate("text", x = -0.035, y = -0.035, label = "P(Up)", size = 5, fontface = "bold", hjust = 0) +
+  annotate("text", x = 1.035, y = -0.035, label = "P(Down)", size = 5, fontface = "bold", hjust = 1) +
+  annotate(
+    "text",
+    x = 0.50,
+    y = 0.47,
+    label = "Transitional\nregion",
+    size = 4.6,
+    color = "white",
+    fontface = "bold"
+  ) +
+  annotate(
+    "text",
+    x = 0.50,
+    y = 0.25,
+    label = "Instability\nregion",
+    size = 4.6,
+    color = "white",
+    fontface = "bold"
+  ) +
+  scale_fill_manual(values = colors, name = "FSF stability region") +
   coord_equal(
     xlim = c(-0.08, 1.18),
     ylim = c(-0.08, 0.96),
     clip = "off"
   ) +
   labs(
-    title = "Figure 2. FSF probability simplex and signal-state regions",
+    title = "Figure 2. FSF probability simplex partitioned into stability regions",
     x = NULL,
     y = NULL
   ) +
@@ -124,6 +137,7 @@ p <- ggplot() +
     plot.title = element_text(face = "bold", hjust = 0, size = 17),
     legend.position = "right",
     legend.title = element_text(face = "bold"),
+    legend.text = element_text(size = 10),
     plot.margin = margin(20, 30, 20, 20)
   )
 
@@ -131,8 +145,7 @@ ggsave(
   file.path(OUT, "Figure2_FSF_probability_simplex_regions.pdf"),
   p,
   width = 9.5,
-  height = 7,
-  device = cairo_pdf
+  height = 7
 )
 
 ggsave(
