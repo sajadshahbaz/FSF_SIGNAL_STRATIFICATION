@@ -1,49 +1,50 @@
 # FSF_SIGNAL_STRATIFICATION
 
-## Feature Signal Framework (FSF)
+# Feature Signal Framework (FSF)
 
-FSF (Feature Signal Framework) is a signal-aware feature stratification framework that characterizes feature behavior under perturbation by estimating state probabilities and deriving interpretable signal classes.
+FSF (Feature Signal Framework) is a signal-aware feature stratification framework designed to characterize feature behavior under repeated perturbations by estimating probabilistic response states and deriving interpretable stability classes.
 
-Rather than focusing solely on differential magnitude or statistical significance, FSF evaluates how consistently a feature exhibits specific response patterns across perturbations.
+Rather than focusing solely on statistical significance or effect magnitude, FSF quantifies how consistently individual features exhibit specific response patterns across perturbation experiments. The framework summarizes these behaviors using probabilistic signal states and the Signal Stratification Index (SSI), enabling biologically interpretable signal classification.
 
 ---
 
-## Conceptual Overview
+# Conceptual Overview
 
-FSF operates in four stages:
+FSF operates in four major stages:
 
 1. **Perturbation**
 
-   * Resampling
-   * Noise injection
-   * Threshold variation
+   - Resampling
+   - Noise injection
+   - Threshold variation
 
 2. **State Probability Estimation**
 
-   * P(up)
-   * P(down)
-   * P(const)
+   Estimation of
+
+   - P(Up)
+   - P(Down)
+   - P(Constant)
 
 3. **Signal Quantification**
 
-   * Signal Stratification Index (SSI)
-   * Stability Deviation (SD)
+   - Signal Stratification Index (SSI)
 
 4. **Signal Classification**
 
-   * Stable Up
-   * Stable Constant
-   * Stable Down
-   * Transitional
-   * Instable
+   - Highly stable Up
+   - Highly stable Down
+   - Highly stable Constant
+   - Transitional
+   - Instability
 
-The resulting signal classes can be interpreted biologically and aggregated to reveal condition-level signal architectures.
+The resulting feature-level signal classes can subsequently be aggregated to reveal condition-level signal architectures and biological response patterns.
 
 ---
 
-## Repository Structure
+# Repository Structure
 
-```text
+```
 config/
 docs/
 manuscript/
@@ -51,121 +52,184 @@ results/
 scripts/
 ```
 
-### Key Components
+## Directory Description
 
-#### Documentation
+### config/
 
-```text
-docs/
-```
+Project configuration files.
 
-Contains formal definitions, benchmark plans, claims, limitations, and project specifications.
+### docs/
 
-#### Analysis Pipeline
+Project documentation, conceptual notes, manuscript planning, benchmark specifications, and repository documentation.
 
-```text
-scripts/
-```
+### manuscript/
 
-Contains the complete FSF workflow, including:
+Working manuscript files (not intended as a permanent publication archive).
 
-* State assignment
-* SSI calculation
-* Stability deviation estimation
-* Synthetic benchmarking
-* Real-data analysis
-* Annotation integration
-* Enrichment analysis
-* Figure generation
+### results/
 
-#### Manuscript Outputs
+Publication-ready figures, supplementary tables, benchmark outputs, and processed manuscript results.
 
-```text
-results/manuscript/
-```
+### scripts/
 
-Contains publication-ready figures and curated summary tables.
+Complete computational workflow including
+
+- preprocessing
+- state assignment
+- SSI calculation
+- synthetic benchmarking
+- biological analyses
+- annotation integration
+- enrichment analysis
+- manuscript figure generation
 
 ---
 
-## Main Manuscript Figures
+# Main Figures
 
-### Figure 1
+## Figure 1
 
-Overview of the FSF framework and signal stratification workflow.
+Overview of the FSF workflow.
 
-### Figure 2
+## Figure 2
 
-FSF probability simplex and signal-state regions.
+Probability simplex partitioned into FSF stability regions.
 
-### Figure 3
+## Figure 3
 
-Condition-level signal architectures and signal-class composition.
+Condition-level signal architecture and signal-class composition.
 
-### Figure 4
+## Figure 4
 
-Condition-specific SSI distributions.
+SSI distributions across biological conditions.
 
-### Figure 5
+## Figure 5
 
-Biological theme distributions and condition profiles.
+Biological interpretation of signal classes.
 
-### Figure 6
+## Figure 6
 
 Synthetic benchmark validation.
 
-### Figure 7
+## Figure 7
 
-Final conceptual model.
+Conceptual interpretation model.
 
 ---
 
-## Reproducing Benchmark Results
+# Software Requirements
 
-Generate synthetic benchmark outputs:
+The analysis pipeline was developed using
+
+- R (≥ 4.5)
+- ggplot2
+- dplyr
+- tidyr
+- readr
+- data.table
+- patchwork
+- cowplot
+
+Publication-quality PNG figures are generated from vector PDF outputs using **Poppler**.
+
+## Install Poppler
+
+### Ubuntu
+
+```bash
+sudo apt install poppler-utils
+```
+
+### macOS
+
+```bash
+brew install poppler
+```
+
+### Conda
+
+```bash
+conda install -c conda-forge poppler
+```
+
+---
+
+# Reproducing Figures
+
+## Generate Figure 2
+
+```bash
+Rscript scripts/manuscript/make_figure2_simplex.R
+```
+
+The script produces the publication PDF
+
+```
+results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.pdf
+```
+
+Generate the publication PNG from the PDF
+
+```bash
+pdftoppm \
+-png \
+-r 300 \
+results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.pdf \
+results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions
+
+mv \
+results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions-1.png \
+results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.png
+```
+
+---
+
+# Figure Generation Policy
+
+The canonical publication figures are generated as **vector PDF** files.
+
+PNG figures are intentionally produced from the PDFs using **Poppler (`pdftoppm`)** rather than directly from R graphics devices. This ensures
+
+- consistent font rendering
+- identical appearance across operating systems
+- publication-quality rasterization
+- avoidance of Cairo/font rendering issues
+
+The PDF files should always be regarded as the authoritative figure outputs.
+
+---
+
+# Synthetic Benchmark
+
+Generate the synthetic benchmark
 
 ```bash
 bash run_fsf_v1_synthetic_benchmark.sh
 ```
 
-Generate benchmark figures:
+---
 
-```bash
-Rscript scripts/36D_generate_benchmark_figures.R
-```
+# Current Project Status
 
-Generate Figure 2:
+Current repository status
 
-```bash
-Rscript scripts/36J_rebuild_Figure2_FSF_simplex.R
-```
+**FSF manuscript preparation**
 
-Generate Figure 3:
-
-```bash
-Rscript scripts/36K_rebuild_Figure3_publication.R
-```
+This repository accompanies the development of the Feature Signal Framework (FSF) manuscript.
 
 ---
 
-## Current Status
+# Citation
 
-Repository frozen for manuscript preparation.
-
-Version:
-**FSF manuscript freeze v1.0**
+Citation information will be updated following manuscript acceptance and publication.
 
 ---
 
-## Citation
+# Author
 
-Citation information will be updated following manuscript submission and publication.
+**Dr. Sajad Shahbazi**
 
----
-
-## Author
-
-Dr. Sajad Shahbazi
-
-Adam Mickiewicz University, Poznań, Poland
-
+Department of Animal Physiology and Development  
+Faculty of Biology  
+Adam Mickiewicz University  
+Poznań, Poland
