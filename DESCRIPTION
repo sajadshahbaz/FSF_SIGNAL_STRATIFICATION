@@ -1,0 +1,18 @@
+Package: FSF
+Type: Package
+Title: Feature Signal Stratification
+Version: 0.1.0.9000
+Authors@R: person("Sajad", "Shahbazi", role = c("aut", "cre"),
+    email = "sajad642008@gmail.com")
+Description: Contract-only development scaffold for the Feature Signal
+    Stratification framework. FSF characterizes perturbation-derived signed
+    effects through Signal Identity, the Signal Stratification Index, signal
+    classes, and condition-level signal architectures. Computational functions
+    are intentionally not implemented in this development phase.
+License: TBD
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
