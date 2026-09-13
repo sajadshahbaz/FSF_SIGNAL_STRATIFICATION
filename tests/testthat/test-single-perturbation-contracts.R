@@ -1,6 +1,4 @@
 test_that("single perturbations retain mathematically valid classes", {
-  skip("Phase 2A contract: mathematically valid classifications are not implemented and do not demonstrate cross-perturbation reproducibility")
-
   data <- data.frame(
     feature_id = c("up_one", "constant_one", "down_one"),
     perturbation_id = "p1",

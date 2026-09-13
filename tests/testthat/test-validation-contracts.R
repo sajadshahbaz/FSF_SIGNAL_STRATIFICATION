@@ -1,6 +1,4 @@
 test_that("invalid scientific inputs fail deterministically", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   valid <- data.frame(
     feature_id = "f1",
     perturbation_id = "p1",
@@ -20,8 +18,6 @@ test_that("invalid scientific inputs fail deterministically", {
 })
 
 test_that("identifiers, keys, rows, and columns are validated", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   valid <- data.frame(
     feature_id = "f1",
     perturbation_id = "p1",

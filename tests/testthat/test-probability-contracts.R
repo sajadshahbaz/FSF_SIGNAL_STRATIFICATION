@@ -1,6 +1,4 @@
 test_that("Signal Identity counts and probabilities are coherent", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   states <- data.frame(
     feature_id = c(rep("a", 3), rep("b", 4)),
     perturbation_id = c(paste0("p", 1:3), paste0("p", 1:4)),
@@ -15,8 +13,6 @@ test_that("Signal Identity counts and probabilities are coherent", {
 })
 
 test_that("SSI and Stability Deviation retain unrounded values", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = "x",
     p_up = 4 / 7,

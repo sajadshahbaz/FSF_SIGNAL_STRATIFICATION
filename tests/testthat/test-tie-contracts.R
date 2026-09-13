@@ -1,6 +1,4 @@
 test_that("an exact 0.50 tie is non-directional Instability", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = "tie",
     p_up = 0.50,
@@ -15,8 +13,6 @@ test_that("an exact 0.50 tie is non-directional Instability", {
 })
 
 test_that("an exact 0.50 unique plurality remains Instability", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = "plurality",
     p_up = 0.50,
@@ -31,8 +27,6 @@ test_that("an exact 0.50 unique plurality remains Instability", {
 })
 
 test_that("strict majority produces a unique Transitional class", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = "majority",
     p_up = 0.51,
@@ -47,8 +41,6 @@ test_that("strict majority produces a unique Transitional class", {
 
 
 test_that("raw near-half probabilities do not create a fuzzy tie", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = "raw_majority",
     p_up = 0.5000000001,

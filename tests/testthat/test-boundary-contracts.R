@@ -1,6 +1,4 @@
 test_that("effect-state boundaries follow the scientific lock", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   tau <- 0.5
   fixture <- data.frame(
     feature_id = paste0("f", 1:4),
@@ -14,8 +12,6 @@ test_that("effect-state boundaries follow the scientific lock", {
 })
 
 test_that("SSI region boundaries follow the scientific lock", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   cases <- data.frame(
     p_up = c(1 / 3, 0.49, 0.50, 0.50 + 1e-12, 0.75 - 1e-12,
              0.75, 0.90 - 1e-12, 0.90, 1),
@@ -35,8 +31,6 @@ test_that("SSI region boundaries follow the scientific lock", {
 })
 
 test_that("classification does not use rounded probabilities", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   identity <- data.frame(
     feature_id = c("below", "above"),
     p_up = c(0.749999999999, 0.750000000001),

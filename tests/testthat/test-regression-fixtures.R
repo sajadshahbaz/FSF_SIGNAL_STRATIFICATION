@@ -1,6 +1,4 @@
 test_that("current-lock integer-count fixtures classify exactly", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   fixtures <- data.frame(
     feature_id = c("tie_half", "plurality_half", "uv_four_sevenths",
                    "stable_boundary", "high_boundary", "pure", "uniform"),

@@ -1,6 +1,4 @@
 test_that("architectures include all ten classes in fixed order", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   classified <- data.frame(
     feature_id = c("a", "b", "c"),
     condition = c("one", "one", "two"),
@@ -19,14 +17,12 @@ test_that("architectures include all ten classes in fixed order", {
 
   count_sums <- tapply(observed$class_count, observed$condition, sum)
   proportion_sums <- tapply(observed$class_proportion, observed$condition, sum)
-  expect_equal(unname(count_sums), c(2, 1))
-  expect_equal(unname(proportion_sums), c(1, 1), tolerance = 1e-15)
+  expect_equal(as.vector(count_sums), c(2, 1))
+  expect_equal(as.vector(proportion_sums), c(1, 1), tolerance = 1e-15)
 })
 
 
 test_that("architecture preserves condition_col and validates identities", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   classified <- data.frame(
     feature_id = c("a", "b"),
     stratum = c("one", "two"),
@@ -46,8 +42,6 @@ test_that("architecture preserves condition_col and validates identities", {
 })
 
 test_that("single-perturbation architectures remain descriptive", {
-  skip("Phase 2A contract: directional composition is valid but cross-perturbation reproducibility is not demonstrated")
-
   classified <- data.frame(
     feature_id = c("a", "b"), condition = "one", n_perturbations = 1L,
     signal_class = c("Highly Stable Up", "Highly Stable Constant")

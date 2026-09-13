@@ -1,6 +1,4 @@
 test_that("probability sum tolerance is validation-only", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   accepted <- data.frame(
     feature_id = "accepted",
     p_up = 0.5000000001,
@@ -18,8 +16,6 @@ test_that("probability sum tolerance is validation-only", {
 })
 
 test_that("individual probabilities must be finite and within zero and one", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   for (value in c(NA_real_, NaN, Inf, -Inf, -1e-12, 1 + 1e-12)) {
     identity <- data.frame(feature_id = "x", p_up = value,
                            p_down = 0.5, p_const = 0.5)

@@ -99,12 +99,8 @@ Tests fix column names and ordering, including grouping columns before
 counts; identifier preservation; and deterministic ordering. No evidence-level
 or replication flag is part of this contract.
 
-## Current scaffold behavior
+## Current implementation behavior
 
-Every computational contract test is explicitly skipped because implementation
-is not authorized. All five exported functions deterministically stop with:
-
-`Not implemented: Phase 2A contract stub`
-
-The skipped tests record future executable expectations without claiming that
-FSF computation currently passes.
+The independent hand-calculated computational contracts are executable for the
+implemented mathematical core. The Level 2 safe historical golden-reference
+integration remains explicitly skipped pending its separately authorized phase.

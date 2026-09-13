@@ -1,6 +1,4 @@
 test_that("duplicate keys are scoped by grouping strata", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   cross_group <- data.frame(
     condition = c("UV", "DES"),
     feature_id = c("f1", "f1"),
@@ -17,8 +15,6 @@ test_that("duplicate keys are scoped by grouping strata", {
 })
 
 test_that("features are analyzed independently within groups", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   data <- data.frame(
     condition = c("UV", "UV", "DES", "DES", "DES"),
     feature_id = "f1",
@@ -33,8 +29,6 @@ test_that("features are analyzed independently within groups", {
 })
 
 test_that("multiple grouping columns preserve user order", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   data <- data.frame(
     batch = "b1", condition = "UV", feature_id = "f1",
     perturbation_id = "p1", effect = 1
@@ -44,8 +38,6 @@ test_that("multiple grouping columns preserve user order", {
 })
 
 test_that("group_cols and grouping values are validated", {
-  skip("Phase 2A contract: FSF computation is not implemented")
-
   valid <- data.frame(
     condition = "UV", feature_id = "f1", perturbation_id = "p1", effect = 1
   )
