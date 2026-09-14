@@ -137,7 +137,7 @@ SSI quantifies concentration of Signal Identity in its largest component.
 
 The current authoritative rule is:
 
-**Instability:**
+**Low Stability:**
 
 \[
 SSI \le 0.50
@@ -163,12 +163,22 @@ SSI \ge 0.90
 
 Scientific interpretation:
 
-- **Instability:** No signal state possesses strict majority support.
+- **Low Stability:** No signal state possesses strict majority support.
 - **Transitional:** A signal state possesses strict majority support, but alternative states remain substantial.
 - **Stable:** A dominant state has strong support.
 - **Highly Stable:** Signal Identity is strongly concentrated near a simplex vertex.
 
-The exact SSI = 0.50 boundary belongs to Instability. This includes both:
+Low Stability denotes low concentration of Signal Identity. It must not be
+interpreted as synonymous with biological instability or with the separate
+Instability scientific framework or metric.
+
+The theoretical SSI minimum remains \(1/3\), attained when:
+
+\[
+P_{up} = P_{down} = P_{const} = \frac{1}{3}
+\]
+
+The exact SSI = 0.50 boundary belongs to Low Stability. This includes both:
 
 - Tied maxima at 0.50.
 - Unique 0.50 pluralities.
@@ -188,11 +198,33 @@ The only current FSF v1 signal classes are:
 7. Transitional Up
 8. Transitional Constant
 9. Transitional Down
-10. Instability
+10. Low Stability
 
-Instability is deliberately non-directional.
+Low Stability is deliberately non-directional.
 
-No Instability Up, Instability Down, Instability Constant, Mixed, or Transitional Mixed class exists in current FSF v1.
+No Low Stability Up, Low Stability Down, Low Stability Constant, Low Stability Tied, Mixed, or Transitional Mixed class exists in current FSF v1.
+
+All records with \(SSI \le 0.50\) belong to the single non-directional signal
+class Low Stability. `dominant_state` may independently record `up`, `down`,
+`constant`, or `tied`, but it does not create a directional Low-Stability
+signal class. Directional FSF signal classes are authorized only when
+\(SSI > 0.50\).
+
+The current v1 identifier policy is:
+
+- Display/category label: `Low Stability`.
+- Case-preserving gene-set identifier token: `Low_Stability`.
+- Lowercase `low_stability` is not a current v1 gene-set identifier token.
+
+This preserves the capitalization convention of the current gene-set
+sanitizer. The schema column names remain `stability_region` and
+`signal_class`.
+
+The term Instability remains valid for the separate Instability scientific
+framework or metric, for historical FSF provenance where that terminology was
+actually used, and for any future SIAFS Instability objective or module. Those
+uses must not be renamed merely because the current FSF categorical region is
+named Low Stability.
 
 ## 10. Condition-Level Signal Architecture
 
@@ -312,7 +344,7 @@ At SSI = 0.50:
 
 Therefore the current rule is clarified to:
 
-- Instability: \(SSI \le 0.50\).
+- Low Stability: \(SSI \le 0.50\).
 - Transitional: \(SSI > 0.50\) and \(SSI < 0.75\).
 
 This is a formal current-definition clarification discovered during package validation.
@@ -352,7 +384,7 @@ Only UV condition-level class architecture changes relative to the historical 0.
 
 Under the current rule:
 
-| Condition | Instability | Transitional | Stable | Highly Stable |
+| Condition | Low Stability | Transitional | Stable | Highly Stable |
 |---|---:|---:|---:|---:|
 | DES | 5,837 (38.434%) | 0 | 0 | 9,350 (61.566%) |
 | GAM | 1,085 (7.144%) | 2,106 (13.867%) | 6,127 (40.344%) | 5,869 (38.645%) |
@@ -363,16 +395,33 @@ Under the current rule:
 
 Interpretation:
 
-- DES remains a mixed Highly-Stable/Instability architecture.
+- DES remains a mixed Highly-Stable/Low-Stability architecture.
 - LT remains Highly-Stable dominated.
 - HT remains entirely Highly Stable.
 - OSM remains entirely Highly Stable.
 - GAM remains multi-layer.
 - UV remains multi-layer but is Transitional-dominated.
 
-Do not retain the manuscript claim that UV has the highest Instability burden.
+Do not retain the historical manuscript claim that UV has the highest Low-Stability or historically named categorical Instability burden.
 
-Do not retain the manuscript claim that Instability is the largest UV region/class.
+Do not retain the manuscript claim that Low Stability is the largest UV region/class.
+
+This terminology change preserves exactly:
+
+- Feature and condition membership.
+- SSI and Stability Deviation.
+- \(P_{up}\), \(P_{down}\), and \(P_{const}\).
+- `dominant_state` and signal-state assignments.
+- All threshold boundaries.
+- Class and architecture counts.
+- Gene-set member vectors and annotation joins.
+- GO and KEGG statistics.
+
+The Low-Stability counts remain DES 5,837; GAM 1,085; HT 0; LT 1,211;
+OSM 0; and UV 2,948, for a total of 11,081. UV remains numerically:
+Low Stability 2,948; Transitional 6,697; Stable 3,151; and Highly Stable
+2,391. UV is therefore Transitional-dominated under the current FSF
+classification.
 
 ## 18. Synthetic Benchmark Migration
 
@@ -392,7 +441,7 @@ Audit identified 71 synthetic features with \(0.50 < SSI < 0.60\). All have:
 - Historical predicted class: `instable`.
 - Current predicted class: Transitional Up.
 
-One synthetic feature has exactly SSI = 0.50 and remains Instability.
+One synthetic feature has exactly SSI = 0.50 and is currently Low Stability.
 
 Current benchmark migration therefore requires classifier/evaluator recomputation, not redesign of the generating distributions.
 
@@ -439,7 +488,7 @@ This includes at minimum:
 - Figure S4.
 - Class-dependent main tables.
 - Complete class annotation atlas.
-- Representative Transitional/Instability gene outputs.
+- Representative Transitional/Low-Stability gene outputs.
 - GO enrichment.
 - KEGG enrichment.
 - Synthetic benchmark summaries.
