@@ -1,4 +1,4 @@
-test_that("an exact 0.50 tie is non-directional Instability", {
+test_that("an exact 0.50 tie is non-directional Low Stability", {
   identity <- data.frame(
     feature_id = "tie",
     p_up = 0.50,
@@ -8,11 +8,11 @@ test_that("an exact 0.50 tie is non-directional Instability", {
   observed <- fsf_classify(identity)
   expect_equal(observed$dominant_state, "tied")
   expect_equal(observed$ssi, 0.50)
-  expect_equal(as.character(observed$stability_region), "Instability")
-  expect_equal(as.character(observed$signal_class), "Instability")
+  expect_equal(as.character(observed$stability_region), "Low Stability")
+  expect_equal(as.character(observed$signal_class), "Low Stability")
 })
 
-test_that("an exact 0.50 unique plurality remains Instability", {
+test_that("an exact 0.50 unique plurality remains Low Stability", {
   identity <- data.frame(
     feature_id = "plurality",
     p_up = 0.50,
@@ -22,8 +22,21 @@ test_that("an exact 0.50 unique plurality remains Instability", {
   observed <- fsf_classify(identity)
   expect_equal(observed$dominant_state, "up")
   expect_equal(observed$ssi, 0.50)
-  expect_equal(as.character(observed$stability_region), "Instability")
-  expect_equal(as.character(observed$signal_class), "Instability")
+  expect_equal(as.character(observed$stability_region), "Low Stability")
+  expect_equal(as.character(observed$signal_class), "Low Stability")
+})
+
+test_that("Low Stability remains non-directional for every dominant-state value", {
+  identity <- data.frame(
+    feature_id = c("up", "down", "constant", "tied"),
+    p_up = c(0.50, 0.30, 0.30, 0.50),
+    p_down = c(0.30, 0.50, 0.20, 0.50),
+    p_const = c(0.20, 0.20, 0.50, 0)
+  )
+  observed <- fsf_classify(identity)
+  expect_equal(observed$dominant_state, c("up", "down", "constant", "tied"))
+  expect_equal(as.character(observed$stability_region), rep("Low Stability", 4L))
+  expect_equal(as.character(observed$signal_class), rep("Low Stability", 4L))
 })
 
 test_that("strict majority produces a unique Transitional class", {

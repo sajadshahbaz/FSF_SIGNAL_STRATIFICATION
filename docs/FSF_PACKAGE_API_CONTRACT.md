@@ -112,15 +112,15 @@ ties or change a classification.
 Classification uses the raw, unrounded validated values. SSI is exactly
 `max(p_up, p_down, p_const)`, followed by these exact comparisons:
 
-- `ssi <= 0.50`: Instability.
+- `ssi <= 0.50`: Low Stability.
 - `0.50 < ssi < 0.75`: Transitional.
 - `0.75 <= ssi < 0.90`: Stable.
 - `ssi >= 0.90`: Highly Stable.
 
 No classification tolerance applies. Tie detection uses equality of validated
 probability values, with no fuzzy or epsilon rule. Thus `(0.50, 0.50, 0)` is a
-tie and Instability; `(0.50, 0.30, 0.20)` has dominant state `up` but remains
-Instability; and `(0.5000000001, 0.4999999999, 0)` has unique dominant state
+tie and Low Stability; `(0.50, 0.30, 0.20)` has dominant state `up` but remains
+Low Stability; and `(0.5000000001, 0.4999999999, 0)` has unique dominant state
 `up` and class `Transitional Up`.
 
 ## Single-perturbation interpretation
@@ -169,10 +169,10 @@ With grouping, the user-supplied `group_cols` appear first in supplied order,
 then the columns above. `dominant_state` values are `up`, `down`, `constant`,
 and `tied`.
 
-Ordered stability-region levels are `Instability`, `Transitional`, `Stable`,
+Ordered stability-region levels are `Low Stability`, `Transitional`, `Stable`,
 and `Highly Stable`. Ordered signal-class levels are:
 
-1. `Instability`
+1. `Low Stability`
 2. `Transitional Up`
 3. `Transitional Constant`
 4. `Transitional Down`

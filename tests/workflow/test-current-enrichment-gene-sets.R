@@ -13,8 +13,8 @@ make_enrichment_joined <- function() {
     p_const = c(0, 0, 1, 0, 0, 0, 1, 0),
     dominant_state = rep(c("up", "down", "constant", "tied"), 2L),
     ssi = rep(c(1, .8, .6, .5), 2L),
-    stability_region = rep(c("Highly Stable", "Stable", "Transitional", "Instability"), 2L),
-    signal_class = rep(c("Highly Stable Up", "Stable Down", "Transitional Constant", "Instability"), 2L),
+    stability_region = rep(c("Highly Stable", "Stable", "Transitional", "Low Stability"), 2L),
+    signal_class = rep(c("Highly Stable Up", "Stable Down", "Transitional Constant", "Low Stability"), 2L),
     stability_deviation = rep(c(0, .2, .4, .5), 2L),
     stringsAsFactors = FALSE
   )

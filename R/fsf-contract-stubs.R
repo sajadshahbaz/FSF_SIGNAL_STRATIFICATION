@@ -3,11 +3,11 @@
 .fsf_probability_tolerance <- 1e-8
 
 .fsf_stability_levels <- c(
-  "Instability", "Transitional", "Stable", "Highly Stable"
+  "Low Stability", "Transitional", "Stable", "Highly Stable"
 )
 
 .fsf_class_levels <- c(
-  "Instability",
+  "Low Stability",
   "Transitional Up", "Transitional Constant", "Transitional Down",
   "Stable Up", "Stable Constant", "Stable Down",
   "Highly Stable Up", "Highly Stable Constant", "Highly Stable Down"
@@ -298,7 +298,7 @@ fsf_classify <- function(identity) {
   dominant_state[maximum_count > 1L] <- "tied"
 
   region <- ifelse(
-    ssi <= 0.50, "Instability",
+    ssi <= 0.50, "Low Stability",
     ifelse(ssi < 0.75, "Transitional",
            ifelse(ssi < 0.90, "Stable", "Highly Stable"))
   )
@@ -308,7 +308,7 @@ fsf_classify <- function(identity) {
     .fsf_stop("validated identity has an impossible tied maximum above 0.50")
   }
   state_title <- c(up = "Up", down = "Down", constant = "Constant")
-  signal_class <- rep("Instability", nrow(identity))
+  signal_class <- rep("Low Stability", nrow(identity))
   signal_class[directional] <- paste(
     region[directional], state_title[dominant_state[directional]]
   )

@@ -4,7 +4,7 @@ annotation_names <- .fsf_annotation_columns[-1L]
 make_joined <- function() {
   rows <- data.frame(
     condition = rep("TEST", 8L),
-    feature_id = c("z_tie", "a_tie", "constant", "transitional", "down", "stable", "unannotated", "instability"),
+    feature_id = c("z_tie", "a_tie", "constant", "transitional", "down", "stable", "unannotated", "low_stability_case"),
     n_perturbations = 4,
     n_up = c(4, 4, 0, 3, 0, 3, 4, 2),
     n_down = c(0, 0, 0, 0, 4, 1, 0, 2),
@@ -14,8 +14,8 @@ make_joined <- function() {
     p_const = c(0, 0, 1, .2, 0, 0, 0, 0),
     dominant_state = c("up", "up", "constant", "up", "down", "up", "up", "tied"),
     ssi = c(1, 1, 1, .6, 1, .75, 1, .5),
-    stability_region = c("Highly Stable", "Highly Stable", "Highly Stable", "Transitional", "Highly Stable", "Stable", "Highly Stable", "Instability"),
-    signal_class = c("Highly Stable Up", "Highly Stable Up", "Highly Stable Constant", "Transitional Up", "Highly Stable Down", "Stable Up", "Highly Stable Up", "Instability"),
+    stability_region = c("Highly Stable", "Highly Stable", "Highly Stable", "Transitional", "Highly Stable", "Stable", "Highly Stable", "Low Stability"),
+    signal_class = c("Highly Stable Up", "Highly Stable Up", "Highly Stable Constant", "Transitional Up", "Highly Stable Down", "Stable Up", "Highly Stable Up", "Low Stability"),
     stability_deviation = c(0, 0, 0, .4, 0, .25, 0, .5),
     stringsAsFactors = FALSE
   )
@@ -57,7 +57,7 @@ stopifnot(identical(names(out), c(
 )))
 stable <- out$current_fsf_stable_signal_catalog
 stopifnot(setequal(stable$feature_id, c("z_tie", "a_tie", "constant", "down", "stable", "unannotated")))
-stopifnot(!any(stable$stability_region %in% c("Transitional", "Instability")))
+stopifnot(!any(stable$stability_region %in% c("Transitional", "Low Stability")))
 stopifnot("constant" %in% stable$dominant_state)
 stopifnot(all(out$current_fsf_stable_directional_signals$dominant_state %in% c("up", "down")))
 top_directional_up <- out$current_fsf_top100_stable_directional_signals

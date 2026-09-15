@@ -2,12 +2,12 @@ test_that("architectures include all ten classes in fixed order", {
   classified <- data.frame(
     feature_id = c("a", "b", "c"),
     condition = c("one", "one", "two"),
-    signal_class = c("Instability", "Stable Up", "Highly Stable Constant")
+    signal_class = c("Low Stability", "Stable Up", "Highly Stable Constant")
   )
   observed <- fsf_architecture(classified)
 
   class_order <- c(
-    "Instability",
+    "Low Stability",
     "Transitional Up", "Transitional Constant", "Transitional Down",
     "Stable Up", "Stable Constant", "Stable Down",
     "Highly Stable Up", "Highly Stable Constant", "Highly Stable Down"
@@ -26,7 +26,7 @@ test_that("architecture preserves condition_col and validates identities", {
   classified <- data.frame(
     feature_id = c("a", "b"),
     stratum = c("one", "two"),
-    signal_class = c("Instability", "Stable Up")
+    signal_class = c("Low Stability", "Stable Up")
   )
   observed <- fsf_architecture(classified, condition_col = "stratum")
   expect_identical(names(observed)[1], "stratum")

@@ -40,8 +40,8 @@ and immediately outside `+/-tau`, and SSI values `1/3`, `0.49`, `0.50`, just
 above `0.50`, just below and exactly `0.75`, just below and exactly `0.90`, and
 `1`.
 
-Tie tests establish that `(0.50, 0.50, 0)` is tied Instability, while
-`(0.50, 0.30, 0.20)` reports dominant `up` but remains Instability.
+Tie tests establish that `(0.50, 0.50, 0)` is tied Low Stability, while
+`(0.50, 0.30, 0.20)` reports dominant `up` but remains Low Stability.
 `(0.5000000001, 0.4999999999, 0)` is not tied and is Transitional Up. No
 rounding occurs before dominant-state, SSI, region, or class evaluation.
 Mathematically, two equal maxima cannot exceed `0.50` because their sum would

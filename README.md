@@ -36,7 +36,7 @@ FSF operates in four major stages:
    - Highly stable Down
    - Highly stable Constant
    - Transitional
-   - Instability
+   - Low Stability
 
 The resulting feature-level signal classes can subsequently be aggregated to reveal condition-level signal architectures and biological response patterns.
 

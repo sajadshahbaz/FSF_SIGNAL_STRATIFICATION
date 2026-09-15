@@ -10,8 +10,8 @@ test_that("current-lock integer-count fixtures classify exactly", {
   observed <- fsf_classify(fixtures)
   expect_equal(
     as.character(observed$signal_class),
-    c("Instability", "Instability", "Transitional Up", "Stable Up",
-      "Highly Stable Up", "Highly Stable Up", "Instability")
+    c("Low Stability", "Low Stability", "Transitional Up", "Stable Up",
+      "Highly Stable Up", "Highly Stable Up", "Low Stability")
   )
   expect_equal(
     observed$dominant_state,

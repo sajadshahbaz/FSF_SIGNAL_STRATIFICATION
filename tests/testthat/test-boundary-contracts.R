@@ -25,7 +25,7 @@ test_that("SSI region boundaries follow the scientific lock", {
   observed <- fsf_classify(cases)
   expect_equal(
     as.character(observed$stability_region),
-    c("Instability", "Instability", "Instability", "Transitional",
+    c("Low Stability", "Low Stability", "Low Stability", "Transitional",
       "Transitional", "Stable", "Stable", "Highly Stable", "Highly Stable")
   )
 })
