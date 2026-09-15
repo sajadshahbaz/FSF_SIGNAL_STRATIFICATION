@@ -1,5 +1,21 @@
 source(file.path("scripts", "lib", "current_fsf_annotation_authority.R"))
 
+current_authority_path <- file.path(
+  "results", "current_fsf_v1", "current_fsf_feature_metrics.tsv"
+)
+stopifnot(identical(
+  .fsf_current_sha256,
+  "e7d21744681122f041ad38623bb4cb4807ab3d254132fffd6269ce0ef0b1ab89"
+))
+stopifnot(identical(
+  .fsf_validate_sha256(
+    current_authority_path,
+    .fsf_current_sha256,
+    "Current FSF authority"
+  ),
+  .fsf_current_sha256
+))
+
 expect_error <- function(code, pattern) {
   error <- tryCatch({
     force(code)
@@ -119,6 +135,33 @@ expect_error(
   "SHA-256 mismatch"
 )
 unlink(wrong_hash_file)
+
+old_authority_file <- tempfile(fileext = ".tsv")
+old_authority_status <- system2(
+  "git",
+  c(
+    "show",
+    paste0(
+      "ba84fe3290988f45e3c54296aa4331559b6712ec:",
+      "results/current_fsf_v1/current_fsf_feature_metrics.tsv"
+    )
+  ),
+  stdout = old_authority_file
+)
+stopifnot(identical(old_authority_status, 0L))
+stopifnot(identical(
+  .fsf_sha256(old_authority_file),
+  "f0874a99572884064d52ae0a77af7f4fe95863c1e8776be505fcd358827b095e"
+))
+expect_error(
+  .fsf_validate_sha256(
+    old_authority_file,
+    .fsf_current_sha256,
+    "Current FSF authority"
+  ),
+  "SHA-256 mismatch"
+)
+unlink(old_authority_file)
 
 expect_error(
   .fsf_validate_join_rows(rbind(joined, joined[1L, , drop = FALSE]), current),

@@ -11,7 +11,7 @@ scientific definition or authorize regeneration of any downstream product.
 The governing scientific lock is `docs/FSF_V1_CURRENT_SCIENTIFIC_LOCK.md`,
 SHA-256:
 
-`f3782d3fa2c6dc6b67df1784695934f78e9a570391f4f3a26e5b645d5515023c`
+`0c7a1462d210144c726041952cb4dfd7a59b386a7136d161090fa443d1d3b9d1`
 
 ## 2. FSF Mathematical Authority
 
@@ -21,7 +21,7 @@ The sole real-data FSF mathematical and classification authority is:
 
 SHA-256:
 
-`f0874a99572884064d52ae0a77af7f4fe95863c1e8776be505fcd358827b095e`
+`e7d21744681122f041ad38623bb4cb4807ab3d254132fffd6269ce0ef0b1ab89`
 
 It is authoritative for these fields:
 
