@@ -1,5 +1,5 @@
 condition	signal_class	class_count	class_proportion
-DES	Instability	5837	0.384341871337328
+DES	Low Stability	5837	0.384341871337328
 DES	Transitional Up	0	0
 DES	Transitional Constant	0	0
 DES	Transitional Down	0	0
@@ -9,7 +9,7 @@ DES	Stable Down	0	0
 DES	Highly Stable Up	678	0.0446434450516889
 DES	Highly Stable Constant	7439	0.489826825574505
 DES	Highly Stable Down	1233	0.0811878580364786
-GAM	Instability	1085	0.0714426812405347
+GAM	Low Stability	1085	0.0714426812405347
 GAM	Transitional Up	359	0.0236386383090801
 GAM	Transitional Constant	1125	0.074076512807006
 GAM	Transitional Down	622	0.0409560808586291
@@ -19,7 +19,7 @@ GAM	Stable Down	1378	0.0907354974649371
 GAM	Highly Stable Up	45	0.00296306051228024
 GAM	Highly Stable Constant	5447	0.358662013564233
 GAM	Highly Stable Down	377	0.0248238625139922
-HT	Instability	0	0
+HT	Low Stability	0	0
 HT	Transitional Up	0	0
 HT	Transitional Constant	0	0
 HT	Transitional Down	0	0
@@ -29,7 +29,7 @@ HT	Stable Down	0	0
 HT	Highly Stable Up	2390	0.157371436096662
 HT	Highly Stable Constant	10233	0.673799960492527
 HT	Highly Stable Down	2564	0.168828603410812
-LT	Instability	1211	0.0797392506749193
+LT	Low Stability	1211	0.0797392506749193
 LT	Transitional Up	0	0
 LT	Transitional Constant	0	0
 LT	Transitional Down	0	0
@@ -39,7 +39,7 @@ LT	Stable Down	0	0
 LT	Highly Stable Up	42	0.00276552314479489
 LT	Highly Stable Constant	13850	0.911964179890696
 LT	Highly Stable Down	84	0.00553104628958978
-OSM	Instability	0	0
+OSM	Low Stability	0	0
 OSM	Transitional Up	0	0
 OSM	Transitional Constant	0	0
 OSM	Transitional Down	0	0
@@ -49,7 +49,7 @@ OSM	Stable Down	0	0
 OSM	Highly Stable Up	203	0.013366695199842
 OSM	Highly Stable Constant	14746	0.970962006979654
 OSM	Highly Stable Down	238	0.0156712978205044
-UV	Instability	2948	0.194113386448937
+UV	Low Stability	2948	0.194113386448937
 UV	Transitional Up	995	0.0655165602159742
 UV	Transitional Constant	4888	0.321854217422796
 UV	Transitional Down	814	0.0535984723776914
