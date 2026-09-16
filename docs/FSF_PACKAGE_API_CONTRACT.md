@@ -65,6 +65,11 @@ The unique observation key is:
 Duplicate keys error and are never aggregated or double-weighted. The same
 `feature_id` and `perturbation_id` may legitimately occur in different groups.
 
+Identity rows are returned in first-appearance order: grouping values and
+features retain the order in which their unique combinations first occur in
+the input. Fixed input order therefore produces fixed output order; FSF does
+not impose a lexical feature or condition sort.
+
 ## Public API
 
 ### `fsf_assign_states(data, tau = 0.5)`
@@ -74,6 +79,9 @@ State values are `up`, `down`, and `constant`. Up is `effect > tau`, Down is
 `effect < -tau`, and Constant is `-tau <= effect <= tau`; exact boundaries are
 Constant.
 
+The function preserves all additional input columns and replaces an existing
+`state` column with the state calculated from `effect`.
+
 ### `fsf_signal_identity(data, tau = 0.5, group_cols = NULL)`
 
 Returns one row per `group_cols + feature_id` identity, or per `feature_id`
@@ -82,21 +90,46 @@ when ungrouped, with `n_perturbations`, state counts, and
 effects; the implementation must distinguish these forms explicitly and apply
 the same validation rules.
 
+When both `state` and `effect` are present, the validated `state` column is the
+operative input and `effect` is ignored. Only grouping columns, `feature_id`,
+and computed count/probability columns are propagated; other row-level columns
+are discarded during aggregation.
+
 ### `fsf_classify(identity)`
 
 Validates Signal Identity and derives `dominant_state`, `ssi`,
 `stability_region`, `signal_class`, and `stability_deviation`.
+
+This function operates row-wise on an already aggregated identity table. The
+caller is responsible for supplying one row per intended identity because the
+function cannot infer which arbitrary columns constitute grouping keys. It
+retains additional input columns and appends or replaces the derived
+classification columns.
+
+Probability-only identity input remains valid. If any count metadata is
+supplied, all of `n_perturbations`, `n_up`, `n_down`, and `n_const` must be
+present. Counts must be finite nonnegative integers, `n_perturbations` must be
+strictly positive, component counts must sum to it, and count-derived
+probabilities must agree with supplied probabilities within `1e-8`.
 
 ### `fsf_analyze(data, tau = 0.5, group_cols = NULL)`
 
 The generic high-level composition of state assignment, grouped Signal
 Identity, and current-lock classification. It does not estimate effects.
 
+Because its output is aggregated, non-grouping row-level columns are not
+propagated. Identity rows use the same first-appearance ordering as
+`fsf_signal_identity()`.
+
 ### `fsf_architecture(data, condition_col = "condition")`
 
 Consumes already classified feature-level results and calculates signal-class
 counts and proportions independently within the column named by
 `condition_col`.
+
+The output contains only the condition column, `signal_class`, `class_count`,
+and `class_proportion`. Conditions retain first-appearance order; signal
+classes always use the fixed ten-class order.
 
 ## Probability and numerical contract
 
@@ -224,3 +257,10 @@ condition-feature classifications. No invalid input is silently repaired.
 The intentional historical 0.60 definition is provenance, not a selectable
 package mode. It must not be exposed as an FSF v1 option. Historical
 classifications are not current-lock golden results.
+
+## Installed documentation
+
+The five exported functions have roxygen-generated installed help pages with
+executable, dataset-independent examples. Documentation is generated from the
+public API comments in `R/`; the generated `man/` files and `NAMESPACE` are
+release artifacts and must remain synchronized with those comments.

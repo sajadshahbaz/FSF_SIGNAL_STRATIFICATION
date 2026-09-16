@@ -1,235 +1,126 @@
-# FSF_SIGNAL_STRATIFICATION
+# Feature Signal Stratification (FSF)
 
-# Feature Signal Framework (FSF)
+FSF is a small, base-R package for describing how consistently a feature shows
+an Up, Down, or Constant response across repeated perturbations. It converts
+signed effects into state probabilities, calculates the Signal Stratification
+Index (SSI), assigns current FSF signal classes, and summarizes class
+architecture across user-defined conditions.
 
-FSF (Feature Signal Framework) is a signal-aware feature stratification framework designed to characterize feature behavior under repeated perturbations by estimating probabilistic response states and deriving interpretable stability classes.
+FSF v1 performs signal stratification. It does **not** estimate effects, test
+differential expression, select or rank features, run enrichment, or make
+biological interpretations.
 
-Rather than focusing solely on statistical significance or effect magnitude, FSF quantifies how consistently individual features exhibit specific response patterns across perturbation experiments. The framework summarizes these behaviors using probabilistic signal states and the Signal Stratification Index (SSI), enabling biologically interpretable signal classification.
+## Installation
 
----
+FSF is not currently claimed to be available from CRAN. Build and install it
+from a source checkout with standard R tooling:
 
-# Conceptual Overview
-
-FSF operates in four major stages:
-
-1. **Perturbation**
-
-   - Resampling
-   - Noise injection
-   - Threshold variation
-
-2. **State Probability Estimation**
-
-   Estimation of
-
-   - P(Up)
-   - P(Down)
-   - P(Constant)
-
-3. **Signal Quantification**
-
-   - Signal Stratification Index (SSI)
-
-4. **Signal Classification**
-
-   - Highly stable Up
-   - Highly stable Down
-   - Highly stable Constant
-   - Transitional
-   - Low Stability
-
-The resulting feature-level signal classes can subsequently be aggregated to reveal condition-level signal architectures and biological response patterns.
-
----
-
-# Repository Structure
-
-```
-config/
-docs/
-manuscript/
-results/
-scripts/
+```sh
+R CMD build .
+R CMD INSTALL FSF_0.1.0.9000.tar.gz
 ```
 
-## Directory Description
+During repository development, `devtools::install()` may also be used if that
+development tool is already available.
 
-### config/
+## Input
 
-Project configuration files.
+The minimum input is a long-form data frame with one row per observed
+feature-perturbation pair:
 
-### docs/
+| Column | Requirement |
+|---|---|
+| `feature_id` | Nonmissing, nonblank identifier |
+| `perturbation_id` | Nonmissing, nonblank identifier |
+| `effect` | Finite numeric signed effect |
 
-Project documentation, conceptual notes, manuscript planning, benchmark specifications, and repository documentation.
+Duplicate `feature_id + perturbation_id` keys are invalid unless independent
+strata are explicitly supplied through `group_cols`.
 
-### manuscript/
+## Minimal analysis
 
-Working manuscript files (not intended as a permanent publication archive).
+```r
+effects <- data.frame(
+  condition = rep(c("control", "treated"), each = 6),
+  feature_id = rep(rep(c("f1", "f2"), each = 3), 2),
+  perturbation_id = rep(paste0("p", 1:3), 4),
+  effect = c(1, 1, 0, 0, 0, 0, 1, 1, 1, -1, -1, 0)
+)
 
-### results/
+classified <- fsf_analyze(
+  effects,
+  tau = 0.5,
+  group_cols = "condition"
+)
+classified
 
-Publication-ready figures, supplementary tables, benchmark outputs, and processed manuscript results.
-
-### scripts/
-
-Complete computational workflow including
-
-- preprocessing
-- state assignment
-- SSI calculation
-- synthetic benchmarking
-- biological analyses
-- annotation integration
-- enrichment analysis
-- manuscript figure generation
-
----
-
-# Main Figures
-
-## Figure 1
-
-Overview of the FSF workflow.
-
-## Figure 2
-
-Probability simplex partitioned into FSF stability regions.
-
-## Figure 3
-
-Condition-level signal architecture and signal-class composition.
-
-## Figure 4
-
-SSI distributions across biological conditions.
-
-## Figure 5
-
-Biological interpretation of signal classes.
-
-## Figure 6
-
-Synthetic benchmark validation.
-
-## Figure 7
-
-Conceptual interpretation model.
-
----
-
-# Software Requirements
-
-The analysis pipeline was developed using
-
-- R (≥ 4.5)
-- ggplot2
-- dplyr
-- tidyr
-- readr
-- data.table
-- patchwork
-- cowplot
-
-Publication-quality PNG figures are generated from vector PDF outputs using **Poppler**.
-
-## Install Poppler
-
-### Ubuntu
-
-```bash
-sudo apt install poppler-utils
+architecture <- fsf_architecture(classified, condition_col = "condition")
+architecture
 ```
 
-### macOS
+`tau` is the positive magnitude threshold used to assign directional states:
 
-```bash
-brew install poppler
+- `effect > tau`: Up
+- `effect < -tau`: Down
+- `-tau <= effect <= tau`: Constant
+
+Exact `+tau` and `-tau` values are therefore Constant.
+
+## Signal Identity and SSI
+
+For each feature identity, FSF reports the proportions `p_up`, `p_down`, and
+`p_const`. These sum to one. SSI is their exact maximum:
+
+```text
+SSI = max(p_up, p_down, p_const)
 ```
 
-### Conda
+The dominant state is the state attaining SSI. Equal maxima produce the
+`"tied"` dominant state.
 
-```bash
-conda install -c conda-forge poppler
+The current stability regions are:
+
+- **Low Stability:** `SSI <= 0.50`
+- **Transitional:** `0.50 < SSI < 0.75`
+- **Stable:** `0.75 <= SSI < 0.90`
+- **Highly Stable:** `SSI >= 0.90`
+
+Low Stability is a single non-directional signal class. A dominant state may
+still be recorded for a Low-Stability feature, but it does not create classes
+such as “Low Stability Up” or “Low Stability Down”. Directional signal classes
+are assigned only when SSI is strictly greater than 0.50.
+
+## Public API
+
+- `fsf_assign_states()` assigns Up, Down, and Constant states.
+- `fsf_signal_identity()` calculates state counts and probabilities.
+- `fsf_classify()` classifies an already aggregated identity table.
+- `fsf_analyze()` performs identity calculation and classification.
+- `fsf_architecture()` calculates condition-level class composition.
+
+See the installed help pages, for example `?fsf_analyze`, for full schemas,
+validation behavior, and examples.
+
+## Package versus research repository
+
+The installed package contains the reusable, dataset-independent FSF
+computational core and package tests. This repository additionally retains
+research provenance, validation workflows, historical pipelines, scientific
+authorities, and manuscript-generation material. Those repository resources
+are not required for normal installed-package use and are excluded from the
+package source tarball.
+
+## Citation
+
+No paper DOI or publication citation is asserted here. Until authoritative
+publication metadata is available, use R's standard package citation:
+
+```r
+citation("FSF")
 ```
 
----
+## Author
 
-# Reproducing Figures
-
-## Generate Figure 2
-
-```bash
-Rscript scripts/manuscript/make_figure2_simplex.R
-```
-
-The script produces the publication PDF
-
-```
-results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.pdf
-```
-
-Generate the publication PNG from the PDF
-
-```bash
-pdftoppm \
--png \
--r 300 \
-results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.pdf \
-results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions
-
-mv \
-results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions-1.png \
-results/manuscript/figures/main/Figure2_FSF_probability_simplex_regions.png
-```
-
----
-
-# Figure Generation Policy
-
-The canonical publication figures are generated as **vector PDF** files.
-
-PNG figures are intentionally produced from the PDFs using **Poppler (`pdftoppm`)** rather than directly from R graphics devices. This ensures
-
-- consistent font rendering
-- identical appearance across operating systems
-- publication-quality rasterization
-- avoidance of Cairo/font rendering issues
-
-The PDF files should always be regarded as the authoritative figure outputs.
-
----
-
-# Synthetic Benchmark
-
-Generate the synthetic benchmark
-
-```bash
-bash run_fsf_v1_synthetic_benchmark.sh
-```
-
----
-
-# Current Project Status
-
-Current repository status
-
-**FSF manuscript preparation**
-
-This repository accompanies the development of the Feature Signal Framework (FSF) manuscript.
-
----
-
-# Citation
-
-Citation information will be updated following manuscript acceptance and publication.
-
----
-
-# Author
-
-**Dr. Sajad Shahbazi**
-
-Department of Animal Physiology and Development  
-Faculty of Biology  
-Adam Mickiewicz University  
-Poznań, Poland
+Sajad Shahbazi
+Department of Animal Physiology and Development
+Faculty of Biology, Adam Mickiewicz University, Poznań, Poland

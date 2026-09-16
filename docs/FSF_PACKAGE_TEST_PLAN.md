@@ -104,3 +104,24 @@ or replication flag is part of this contract.
 The independent hand-calculated computational contracts are executable for the
 implemented mathematical core. The Level 2 safe historical golden-reference
 integration remains explicitly skipped pending its separately authorized phase.
+
+## Release-hardening contracts
+
+Package release tests additionally protect behavior that was previously
+implicit:
+
+- supplied count metadata requires a positive `n_perturbations`, integer-like
+  nonnegative counts, correct component sums, and count-derived probabilities
+  agreeing with supplied probabilities within `1e-8`;
+- probability-only `fsf_classify()` input remains valid and classification is
+  row-wise on caller-aggregated identities;
+- when `state` and `effect` coexist, validated `state` takes precedence in
+  `fsf_signal_identity()`;
+- extra-column preservation and discard behavior follows each documented
+  public output schema;
+- identity and condition outputs preserve first-appearance order and are
+  deterministic for fixed input order;
+- all five exported functions have executable, external-file-free installed
+  examples; and
+- isolated build, install, fresh-session API smoke, and `R CMD check` gates
+  protect package portability without importing repository workflows.

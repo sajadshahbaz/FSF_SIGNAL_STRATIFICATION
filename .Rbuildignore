@@ -1,0 +1,10 @@
+^\.Rbuildignore$
+^\.gitignore$
+^ROOT_STRUCTURE\.txt$
+^config$
+^data$
+^docs$
+^results$
+^scripts$
+^tests/workflow$
+^run_fsf_v1_synthetic_benchmark\.sh$

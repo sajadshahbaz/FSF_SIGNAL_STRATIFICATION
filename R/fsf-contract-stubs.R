@@ -185,9 +185,19 @@
         .fsf_stop("Signal Identity counts must be finite nonnegative integers")
       }
     }
+    if (any(identity$n_perturbations <= 0)) {
+      .fsf_stop("n_perturbations must be greater than zero")
+    }
     if (any(identity$n_up + identity$n_down + identity$n_const !=
             identity$n_perturbations)) {
       .fsf_stop("Signal Identity counts must sum to n_perturbations")
+    }
+    count_probabilities <- cbind(identity$n_up, identity$n_down,
+                                 identity$n_const) / identity$n_perturbations
+    supplied_probabilities <- as.matrix(identity[probability_names])
+    if (any(abs(count_probabilities - supplied_probabilities) >
+            .fsf_probability_tolerance)) {
+      .fsf_stop("Signal Identity counts and probabilities must agree within 1e-8")
     }
   }
   invisible(identity)
@@ -215,6 +225,22 @@
 #'
 #' @return The validated input with a character `state` column containing
 #'   `up`, `down`, or `constant`.
+#' @details Additional input columns are retained. An existing `state` column
+#'   is replaced. Invalid input produces an error rather than being repaired.
+#'
+#' @section Errors:
+#' Errors on missing columns, invalid identifiers, duplicate observation keys,
+#' nonnumeric or nonfinite effects, empty input, or invalid `tau`.
+#'
+#' @examples
+#' effects <- data.frame(
+#'   feature_id = paste0("f", 1:4),
+#'   perturbation_id = "p1",
+#'   effect = c(0.5, -0.5, 0.6, -0.6)
+#' )
+#' fsf_assign_states(effects, tau = 0.5)
+#' # Exact +tau and -tau are constant; only values beyond them are directional.
+#'
 #' @export
 fsf_assign_states <- function(data, tau = 0.5) {
   .fsf_validate_effect_input(data, tau)
@@ -237,6 +263,26 @@ fsf_assign_states <- function(data, tau = 0.5) {
 #'
 #' @return One row per Signal Identity. Grouping columns occur first in
 #'   user-supplied order, followed by `feature_id`, counts, and probabilities.
+#'   Identities follow their first appearance in the input.
+#' @details If both `state` and `effect` columns are present, the validated
+#'   `state` column takes precedence and `effect` is not used. Columns other
+#'   than grouping columns and the required identity inputs are not propagated
+#'   to the aggregated output. State probabilities are the corresponding state
+#'   counts divided by each identity's own `n_perturbations`.
+#'
+#' @section Errors:
+#' Errors on invalid effect/state input, grouping specifications, identifiers,
+#' duplicate observation keys, empty input, or invalid `tau`.
+#'
+#' @examples
+#' effects <- data.frame(
+#'   condition = c("A", "A", "B", "B"),
+#'   feature_id = "gene1",
+#'   perturbation_id = c("p1", "p2", "p1", "p2"),
+#'   effect = c(1, 0, -1, -1)
+#' )
+#' fsf_signal_identity(effects, tau = 0.5, group_cols = "condition")
+#'
 #' @export
 fsf_signal_identity <- function(data, tau = 0.5, group_cols = NULL) {
   .fsf_validate_data_frame(data)
@@ -286,6 +332,32 @@ fsf_signal_identity <- function(data, tau = 0.5, group_cols = NULL) {
 #'
 #' @return The identity columns plus `dominant_state`, `ssi`,
 #'   `stability_region`, `signal_class`, and `stability_deviation`.
+#' @details `identity` must already contain one aggregated row per intended
+#'   identity; this row-wise function does not infer grouping columns or merge
+#'   duplicate identities. Additional columns are retained. When count metadata
+#'   is supplied, all four count columns are required, `n_perturbations` must
+#'   be positive, component counts must sum to it, and count-derived
+#'   probabilities must agree with supplied probabilities within `1e-8`.
+#'
+#' SSI is the exact maximum of `p_up`, `p_down`, and `p_const`. Regions are
+#' Low Stability for SSI <= 0.50, Transitional for 0.50 < SSI < 0.75,
+#' Stable for 0.75 <= SSI < 0.90, and Highly Stable for SSI >= 0.90.
+#' Equal maximum probabilities produce `dominant_state = "tied"`. Low
+#' Stability is always non-directional, even when its dominant state is unique.
+#'
+#' @section Errors:
+#' Errors on invalid identifiers, probabilities, partial or inconsistent count
+#' metadata, or any classification state outside the current FSF contract.
+#'
+#' @examples
+#' identity <- data.frame(
+#'   feature_id = c("half", "majority", "stable", "high"),
+#'   p_up = c(0.50, 0.51, 0.75, 0.90),
+#'   p_down = c(0.30, 0.29, 0.15, 0.05),
+#'   p_const = c(0.20, 0.20, 0.10, 0.05)
+#' )
+#' fsf_classify(identity)
+#'
 #' @export
 fsf_classify <- function(identity) {
   .fsf_validate_probabilities(identity)
@@ -345,6 +417,22 @@ fsf_classify <- function(identity) {
 #'
 #' @details With one perturbation, SSI = 1 is structurally determined and does
 #'   not constitute evidence of cross-perturbation stability.
+#'   Non-grouping extra input columns are not propagated because analysis
+#'   returns the aggregated Signal Identity schema. Identity rows retain the
+#'   first-appearance order of their grouping values and feature identifiers.
+#'
+#' @section Errors:
+#' Propagates deterministic validation errors from Signal Identity calculation
+#' and classification; invalid inputs are never silently repaired.
+#'
+#' @examples
+#' effects <- data.frame(
+#'   feature_id = rep(c("f1", "f2"), each = 3),
+#'   perturbation_id = rep(paste0("p", 1:3), 2),
+#'   effect = c(1, 1, 0, -1, -1, -1)
+#' )
+#' fsf_analyze(effects, tau = 0.5)
+#'
 #' @export
 fsf_analyze <- function(data, tau = 0.5, group_cols = NULL) {
   identity <- fsf_signal_identity(data, tau, group_cols)
@@ -368,6 +456,22 @@ fsf_analyze <- function(data, tau = 0.5, group_cols = NULL) {
 #' @details An architecture derived exclusively from single-perturbation
 #'   identities describes directional class composition, not demonstrated
 #'   reproducibility across repeated perturbations.
+#'   Conditions follow their first appearance in `data`; within every condition
+#'   all ten signal classes use the fixed FSF class order. Other columns are not
+#'   propagated to the four-column architecture output.
+#'
+#' @section Errors:
+#' Errors on an invalid condition column, identifiers, duplicate
+#' condition-feature keys, empty input, or non-current signal classes.
+#'
+#' @examples
+#' classified <- data.frame(
+#'   condition = c("A", "A", "B"),
+#'   feature_id = c("f1", "f2", "f3"),
+#'   signal_class = c("Low Stability", "Stable Up", "Highly Stable Down")
+#' )
+#' fsf_architecture(classified)
+#'
 #' @export
 fsf_architecture <- function(data, condition_col = "condition") {
   .fsf_validate_data_frame(data)
