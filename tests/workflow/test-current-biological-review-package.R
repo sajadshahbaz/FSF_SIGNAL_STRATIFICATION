@@ -1,0 +1,20 @@
+#!/usr/bin/env Rscript
+
+source(file.path("scripts", "current", "build_current_biological_review_package.R"))
+root <- file.path("results", "current_fsf_v1", "manuscript", "review")
+stopifnot(audit_current_biological_review_package(root))
+
+inventory <- readr::read_tsv(file.path(root, "historical_interpretation_inventory.tsv"), show_col_types = FALSE)
+go <- readr::read_tsv(file.path(root, "go_theme_review.tsv"), show_col_types = FALSE)
+kegg <- readr::read_tsv(file.path(root, "kegg_theme_review.tsv"), show_col_types = FALSE)
+profile <- readr::read_tsv(file.path(root, "combined_profile_review.tsv"), show_col_types = FALSE)
+go_evidence <- readr::read_tsv(file.path(root, "current_go_evidence.tsv"), show_col_types = FALSE)
+kegg_evidence <- readr::read_tsv(file.path(root, "current_kegg_evidence.tsv"), show_col_types = FALSE)
+stopifnot(nrow(inventory) == nrow(.historical_rules()))
+stopifnot(all(c("current_matching_term_count", "evidence_classification") %in% names(go)))
+stopifnot(all(c("current_matching_term_count", "evidence_classification") %in% names(kegg)))
+stopifnot(nrow(profile) == 40L, any(profile$condition == "UV"))
+stopifnot(length(unique(go_evidence$gene_set_id)) == 40L)
+stopifnot(length(unique(kegg_evidence$gene_set_id)) == 40L)
+stopifnot(all(is.na(profile$author_decision)), all(is.na(profile$author_notes)))
+cat("current biological review package tests: PASS\n")
