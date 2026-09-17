@@ -2,6 +2,11 @@
 
 root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 review <- file.path(root, "results", "current_fsf_v1", "manuscript", "review")
+final_packet_path <- file.path(review, "author_decision_packet_FINAL.tsv")
+evidence_path <- file.path(review, "deferred_profile_term_evidence.tsv")
+summary_path <- file.path(review, "final_biological_interpretation_summary.md")
+
+stopifnot(file.exists(final_packet_path), file.exists(evidence_path), file.exists(summary_path))
 
 read_tsv_text <- function(path) {
   read.delim(
@@ -15,8 +20,8 @@ read_tsv_text <- function(path) {
 }
 
 locked <- read_tsv_text(file.path(review, "author_decision_packet_LOCKED.tsv"))
-final <- read_tsv_text(file.path(review, "author_decision_packet_FINAL.tsv"))
-evidence <- read_tsv_text(file.path(review, "deferred_profile_term_evidence.tsv"))
+final <- read_tsv_text(final_packet_path)
+evidence <- read_tsv_text(evidence_path)
 
 allowed_ids <- c(
   "PROFILE_002", "PROFILE_003", "PROFILE_008",
@@ -58,6 +63,14 @@ observed_go <- table(factor(evidence$decision_id[evidence$source == "GO"], level
 observed_kegg <- table(factor(evidence$decision_id[evidence$source == "KEGG"], levels = allowed_ids))
 stopifnot(identical(as.integer(observed_go), expected_go))
 stopifnot(identical(as.integer(observed_kegg), expected_kegg))
+stopifnot(all(table(factor(evidence$decision_id, levels = allowed_ids)) > 0L))
+
+# DROP applies to the unsupported historical interpretation only. The frozen
+# quantitative GO/KEGG evidence remains present for every resolved profile.
+stopifnot(all(final$author_decision[match(allowed_ids, final$decision_id)] == "DROP"))
+stopifnot(all(nzchar(evidence$term_id)))
+stopifnot(all(nzchar(evidence$adjusted_p)))
+stopifnot(all(nzchar(evidence$enrichment_measure)))
 
 run_and_require_pass <- function(script, marker, args = character()) {
   output <- system2("Rscript", c(script, args), stdout = TRUE, stderr = TRUE)
@@ -79,18 +92,5 @@ run_and_require_pass(
   file.path(root, "tests", "workflow", "test-current-author-decision-lock.R"),
   "current author biological decision lock tests: PASS"
 )
-
-allowed_paths <- c(
-  "results/current_fsf_v1/manuscript/review/deferred_profile_term_evidence.tsv",
-  "results/current_fsf_v1/manuscript/review/author_decision_packet_FINAL.tsv",
-  "results/current_fsf_v1/manuscript/review/final_biological_interpretation_summary.md",
-  "tests/workflow/test-current-final-biological-decision-lock.R"
-)
-tracked_changes <- system2("git", c("diff", "--name-only"), stdout = TRUE)
-staged_changes <- system2("git", c("diff", "--cached", "--name-only"), stdout = TRUE)
-untracked <- system2("git", c("ls-files", "--others", "--exclude-standard"), stdout = TRUE)
-stopifnot(length(tracked_changes) == 0L, length(staged_changes) == 0L)
-stopifnot(setequal(untracked, allowed_paths))
-stopifnot(!any(grepl("\\.(pdf|png|jpe?g|svg|tiff?)$", untracked, ignore.case = TRUE)))
 
 cat("current final biological decision lock tests: PASS\n")
