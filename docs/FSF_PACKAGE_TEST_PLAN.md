@@ -4,7 +4,7 @@
 
 Level 1 uses small hand-calculated fixtures to protect formulas, exact
 boundaries, exact tie semantics, grouping, validation, output schema, and
-invariants. Level 2 will compare safe numeric quantities against committed
+invariants. Level 2 compares safe numeric quantities against committed
 historical references without importing historical 0.60 class semantics.
 
 Safe Level 2 quantities are effects, states, state counts, probabilities,
@@ -15,7 +15,7 @@ copied into this scaffold.
 
 ## Grouping contracts
 
-Skipped future tests establish that:
+Implemented tests establish that:
 
 - The same `feature_id + perturbation_id` in distinct conditions is accepted
   with `group_cols = "condition"`.
@@ -56,7 +56,8 @@ stratum.
 
 ## Single-perturbation contracts
 
-Skipped fixtures cover one Up, Constant, and Down perturbation. Each produces
+Implemented fixtures cover one Up, Constant, and Down perturbation. Each
+produces
 `n_perturbations = 1`, a one-hot identity, SSI 1, and the corresponding Highly
 Stable directional class.
 
@@ -73,11 +74,12 @@ composition rather than demonstrated reproducibility.
 
 Fixtures include an exact-half tie, exact-half unique plurality, UV-like `4/7`,
 exact `0.75`, exact `0.90`, pure state, and near-uniform `1/3` identity.
-Directional variants will cover Up, Down, and Constant where applicable.
+Directional variants cover Up, Down, and Constant where applicable.
 
 ## Validation contracts
 
-Skipped tests require errors for `NA`, `NaN`, `Inf`, `-Inf`, character effects,
+Implemented tests require errors for `NA`, `NaN`, `Inf`, `-Inf`, character
+effects,
 blank or missing IDs, duplicate composite keys, invalid `tau`, empty input,
 missing required columns, invalid probability ranges or sums, inconsistent
 counts, invalid grouping specifications and values, and invalid architecture
@@ -103,11 +105,11 @@ or replication flag is part of this contract.
 
 The independent hand-calculated computational contracts are executable for the
 implemented mathematical core. The Level 2 safe historical golden-reference
-integration remains explicitly skipped pending its separately authorized phase.
+tests are implemented with committed, classification-excluding fixtures.
 
 ## Release-hardening contracts
 
-Package release tests additionally protect behavior that was previously
+Implemented package tests additionally protect behavior that was previously
 implicit:
 
 - supplied count metadata requires a positive `n_perturbations`, integer-like
@@ -121,7 +123,8 @@ implicit:
   public output schema;
 - identity and condition outputs preserve first-appearance order and are
   deterministic for fixed input order;
-- all five exported functions have executable, external-file-free installed
-  examples; and
-- isolated build, install, fresh-session API smoke, and `R CMD check` gates
-  protect package portability without importing repository workflows.
+- all five exported functions have executable, external-file-free examples.
+
+Isolated build, install, fresh-session API smoke, and `R CMD check` remain
+release-process gates. Their presence in this plan does not claim that they
+have been run for the current working tree.

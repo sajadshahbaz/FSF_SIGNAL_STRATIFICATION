@@ -54,16 +54,25 @@ authored<-tolower(c(packet$candidate_theme,packet$within_condition_distinctivene
 prohibited<-c("adaptive program","protective","fitness","causal","mechanistic","functionally required","robust program")
 stopifnot(!any(vapply(prohibited,function(z)any(grepl(z,authored,fixed=TRUE)),logical(1))))
 
-fig<-c("scripts/current/figures/build_current_manuscript_figures.R"="345a6077d2c23f8ba24c6a890422521a6359bba852120c56ff99e52c1cbb834c",
- "results/current_fsf_v1/manuscript/figures/Figure5.pdf"="ca8dbc79c55081cc4dc84bba87dcec54cb5e4e854f716aff674a77edebe4f8a7",
- "results/current_fsf_v1/manuscript/figures/Figure5.png"="e8405a4f8d9c421fe5a56143a0328b26087b187c7b2b1ecd994ecc8d544efa7f",
- "results/current_fsf_v1/manuscript/figures/Figure7.pdf"="c11babb4deed9bc75bcd09bcdc832d18481e309930907dce1db9d5e6a7ef6c17",
- "results/current_fsf_v1/manuscript/figures/Figure7.png"="df442be3cdfce8a5f23107afd6efeca9981d5fdb9d7e018478d914db632b0ef0")
-stopifnot(all(vapply(names(fig),sha,"")==fig))
+figure5_paths<-file.path(root,"results/current_fsf_v1/manuscript/figures/main",
+ c("Figure5.pdf","Figure5.png"))
+figure7_paths<-file.path(root,"results/current_fsf_v1/manuscript/figures/main",
+ c("Figure7.pdf","Figure7.png"))
+figure7_source<-file.path(root,
+ "results/current_fsf_v1/manuscript/figures/new/Figure_7.png")
+stopifnot(all(file.exists(c(figure5_paths,figure7_paths,figure7_source))))
+figure7_png<-figure7_paths[basename(figure7_paths)=="Figure7.png"]
+protected_figure7_hash<-"6ab8be9958a8073303661814fa7def0de9e1a5d9ece745adb23dc1bf377771a0"
+stopifnot(system2("cmp",c("--silent",figure7_png,figure7_source))==0L,
+ sha(figure7_png)==sha(figure7_source),
+ sha(figure7_png)==protected_figure7_hash,
+ sha(figure7_source)==protected_figure7_hash)
 protected<-c("results/current_fsf_v1/manuscript/semantic_authority",
  "results/current_fsf_v1/manuscript/biological_themes",
- "scripts/current/biological_themes","tests/workflow/test-current-biological-theme-review.R")
+ "scripts/current/biological_themes")
 stopifnot(system2("git",c("diff","--quiet","HEAD","--",protected))==0L)
+review_test<-file.path(root,"tests","workflow","test-current-biological-theme-review.R")
+stopifnot(file.exists(review_test),is.expression(parse(file=review_test)))
 
 tmp<-tempfile("author-biological-theme-packet-");dir.create(tmp)
 log<-system2("Rscript",c("--vanilla",builder,tmp),stdout=TRUE,stderr=TRUE)

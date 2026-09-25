@@ -10,9 +10,9 @@ suppressPackageStartupMessages({
 })
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
-FIG_MAIN <- file.path(ROOT, "results/manuscript/figures/main")
-FIG_SUPP <- file.path(ROOT, "results/manuscript/figures/supplementary")
-LOG <- file.path(ROOT, "results/manuscript/logs/36B_generate_main_manuscript_figures.log")
+FIG_MAIN <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/main")
+FIG_SUPP <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/supplementary")
+LOG <- file.path(ROOT, "results/archive/pre_repair_manuscript/logs/36B_generate_main_manuscript_figures.log")
 
 dir.create(FIG_MAIN, recursive = TRUE, showWarnings = FALSE)
 dir.create(FIG_SUPP, recursive = TRUE, showWarnings = FALSE)
@@ -25,17 +25,17 @@ cat("Started:", as.character(Sys.time()), "\n")
 cat("============================================================\n\n")
 
 bio <- read_tsv(
-  file.path(ROOT, "results/manuscript/tables/main/Table_SignalClass_Biology_CURATED.tsv"),
+  file.path(ROOT, "results/archive/pre_repair_manuscript/tables/main/Table_SignalClass_Biology_CURATED.tsv"),
   show_col_types = FALSE
 )
 
 arch <- read_tsv(
-  file.path(ROOT, "results/manuscript/tables/main/Table_Condition_SignalArchitecture_CURATED.tsv"),
+  file.path(ROOT, "results/archive/pre_repair_manuscript/tables/main/Table_Condition_SignalArchitecture_CURATED.tsv"),
   show_col_types = FALSE
 )
 
 bench <- read_tsv(
-  file.path(ROOT, "results/manuscript/tables/supplementary/synthetic_or_benchmark__FSF_v1_final_benchmark_report.tsv"),
+  file.path(ROOT, "results/archive/pre_repair_manuscript/tables/supplementary/synthetic_or_benchmark__FSF_v1_final_benchmark_report.tsv"),
   show_col_types = FALSE
 )
 

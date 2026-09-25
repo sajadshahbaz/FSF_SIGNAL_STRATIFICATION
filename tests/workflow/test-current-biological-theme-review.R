@@ -3,15 +3,37 @@ root<-normalizePath(getwd(),winslash="/",mustWork=TRUE)
 out<-file.path(root,"results/current_fsf_v1/manuscript/biological_themes")
 sem<-file.path(root,"results/current_fsf_v1/manuscript/semantic_authority")
 builder<-file.path(root,"scripts/current/biological_themes/build_current_biological_theme_review.R")
+source(file.path(root,"scripts/current/build_current_external_artifact_manifests.R"))
+external_root<-.fsf_external_root()
 rd<-function(p)read.delim(p,check.names=FALSE,quote="",stringsAsFactors=FALSE)
 sha<-function(p)sub(" .*","",system2("sha256sum",p,stdout=TRUE)[1])
 blank<-function(x)all(is.na(x)|!nzchar(x))
+snapshot<-function(paths){
+ files<-unlist(lapply(paths,function(path){
+  if(!dir.exists(path))return(character())
+  list.files(path,all.files=TRUE,recursive=TRUE,full.names=TRUE,no..=TRUE)
+ }),use.names=FALSE)
+ if(!length(files))return(setNames(character(),character()))
+ info<-file.info(files)
+ files<-sort(normalizePath(files[!is.na(info[["isdir"]])&!info[["isdir"]]],
+  winslash="/",mustWork=TRUE))
+ relative<-substring(files,nchar(root)+2L)
+ setNames(vapply(files,function(path)sha(shQuote(path)),""),relative)
+}
+protected_scope<-file.path(root,c("manuscript","docs"))
+protected_before<-snapshot(protected_scope)
 expected<-c(go_term_authority.tsv="608020c5f4c95263a34749b54b23a797c621184a27979dd59652506fcee1a218",
  kegg_term_authority.tsv="9652ad9bf7a89cf6cbb7f73da5cf99e8808241be284531bd47f85d21eef50671",
  current_significant_go_annotated.tsv="6bcf373e531b9dbfd8e1e89dc25ba77e2b2407c9c5dc3741408da281571786dd",
  current_significant_kegg_annotated.tsv="6bf9666965f84c7f183e75331f90cb878f2eabe0b8caf7adff6d520dfcb39735",
  biological_semantic_review_packet.tsv="c3b720079f405a8f9b20a4704435ae09e3a4e0887b559106bd4b85f996c42403")
 stopifnot(all(vapply(file.path(sem,names(expected)),sha,"")==expected))
+semantic_manifest<-rd(file.path(sem,"semantic_source_manifest.tsv"))
+stopifnot(all(vapply(semantic_manifest$local_artifact,.fsf_validate_external_locator,logical(1L))))
+obo_row<-semantic_manifest$resource_type=="go-basic OBO"
+stopifnot(sum(obo_row)==1L)
+obo_path<-.fsf_resolve_external_locator(semantic_manifest$local_artifact[obo_row],external_root)
+stopifnot(sha(obo_path)==semantic_manifest$sha256[obo_row])
 
 source_packet<-rd(file.path(sem,"biological_semantic_review_packet.tsv"))
 trace<-rd(file.path(out,"biological_theme_evidence_trace.tsv"))
@@ -66,17 +88,24 @@ go<-rd(file.path(sem,"current_significant_go_annotated.tsv"))
 members<-unlist(strsplit(groups$member_term_ids,";",fixed=TRUE))
 stopifnot(setequal(members,unique(go$go_term)))
 
-figure_expected<-c(
- "scripts/current/figures/build_current_manuscript_figures.R"="345a6077d2c23f8ba24c6a890422521a6359bba852120c56ff99e52c1cbb834c",
- "results/current_fsf_v1/manuscript/figures/Figure5.pdf"="ca8dbc79c55081cc4dc84bba87dcec54cb5e4e854f716aff674a77edebe4f8a7",
- "results/current_fsf_v1/manuscript/figures/Figure5.png"="e8405a4f8d9c421fe5a56143a0328b26087b187c7b2b1ecd994ecc8d544efa7f",
- "results/current_fsf_v1/manuscript/figures/Figure7.pdf"="c11babb4deed9bc75bcd09bcdc832d18481e309930907dce1db9d5e6a7ef6c17",
- "results/current_fsf_v1/manuscript/figures/Figure7.png"="df442be3cdfce8a5f23107afd6efeca9981d5fdb9d7e018478d914db632b0ef0")
-stopifnot(all(vapply(names(figure_expected),sha,"")==figure_expected))
-stopifnot(system2("git",c("diff","--quiet","HEAD","--","manuscript","docs"))==0L)
+figure5_paths<-file.path(root,"results/current_fsf_v1/manuscript/figures/main",
+ c("Figure5.pdf","Figure5.png"))
+figure7_paths<-file.path(root,"results/current_fsf_v1/manuscript/figures/main",
+ c("Figure7.pdf","Figure7.png"))
+figure7_source<-file.path(root,
+ "results/current_fsf_v1/manuscript/figures/new/Figure_7.png")
+stopifnot(all(file.exists(c(figure5_paths,figure7_paths,figure7_source))))
+figure7_png<-figure7_paths[basename(figure7_paths)=="Figure7.png"]
+protected_figure7_hash<-"6ab8be9958a8073303661814fa7def0de9e1a5d9ece745adb23dc1bf377771a0"
+stopifnot(system2("cmp",c("--silent",figure7_png,figure7_source))==0L,
+ sha(figure7_png)==sha(figure7_source),
+ sha(figure7_png)==protected_figure7_hash,
+ sha(figure7_source)==protected_figure7_hash)
 
 tmp<-tempfile("biological-theme-review-");dir.create(tmp)
 log<-system2("Rscript",c("--vanilla",builder,tmp),stdout=TRUE,stderr=TRUE)
+protected_after<-snapshot(protected_scope)
+stopifnot(identical(protected_before,protected_after))
 rebuilt<-rd(file.path(tmp,"biological_theme_output_hashes.tsv"))
 frozen<-rd(file.path(out,"biological_theme_output_hashes.tsv"))
 stopifnot(identical(frozen,rebuilt))

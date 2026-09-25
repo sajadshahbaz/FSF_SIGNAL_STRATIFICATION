@@ -117,11 +117,11 @@ validate_frozen_state <- function() {
   protected_hashes <- c(
     "results/current_fsf_v1/manuscript/figures/new/Figure_1.png" =
       "9e3796b99bc0fd1b36d8c5029ee286ebfe76c9bf018d6d763dab596fd83be0f2",
-    "results/current_fsf_v1/manuscript/figures/Figure1.png" =
+    "results/current_fsf_v1/manuscript/figures/main/Figure1.png" =
       "9e3796b99bc0fd1b36d8c5029ee286ebfe76c9bf018d6d763dab596fd83be0f2",
     "results/current_fsf_v1/manuscript/figures/new/Figure_7.png" =
       "6ab8be9958a8073303661814fa7def0de9e1a5d9ece745adb23dc1bf377771a0",
-    "results/current_fsf_v1/manuscript/figures/Figure7.png" =
+    "results/current_fsf_v1/manuscript/figures/main/Figure7.png" =
       "6ab8be9958a8073303661814fa7def0de9e1a5d9ece745adb23dc1bf377771a0"
   )
   actual <- vapply(names(protected_hashes), function(path) {

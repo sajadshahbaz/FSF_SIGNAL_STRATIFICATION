@@ -38,9 +38,14 @@ FSF is not:
 
 * A differential expression algorithm.
 * A feature-selection algorithm.
-* A classification algorithm.
+* A supervised predictive classifier.
 * A clustering algorithm.
 * A network-inference algorithm.
+
+FSF does assign descriptive stability regions and signal classes from observed
+state probabilities. Those assignments are signal stratification, not trained
+prediction: they do not by themselves predict future observations or infer
+causal, mechanistic, fitness, adaptive, or biological-importance labels.
 
 ## Publication Position
 

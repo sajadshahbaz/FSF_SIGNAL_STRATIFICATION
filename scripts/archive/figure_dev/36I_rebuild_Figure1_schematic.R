@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
 })
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
-OUT  <- file.path(ROOT, "results/manuscript/figures/main")
+OUT  <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/main")
 dir.create(OUT, recursive = TRUE, showWarnings = FALSE)
 
 savep <- function(p, name, w = 12, h = 7) {

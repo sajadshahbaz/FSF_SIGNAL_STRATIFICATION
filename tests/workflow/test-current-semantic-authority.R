@@ -2,7 +2,13 @@
 
 root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 out <- file.path(root, "results/current_fsf_v1/manuscript/semantic_authority")
-raw <- "/media/saji/5E06441D0643F5152/FSF_R_PACKAGE_ARTIFACTS/current_fsf_v1/manuscript/semantic_authority/raw"
+external_root <- Sys.getenv("FSF_EXTERNAL_ARTIFACT_ROOT", unset = "")
+stopifnot(nzchar(external_root))
+resolver <- file.path(root, "scripts/current/build_current_external_artifact_manifests.R")
+source(resolver)
+external_root <- .fsf_external_root(external_root)
+raw_locator <- "current_fsf_v1/manuscript/semantic_authority/raw"
+raw <- .fsf_resolve_external_locator(raw_locator, external_root)
 builder <- file.path(root, "scripts/current/semantic/build_current_semantic_authority.R")
 go_path <- file.path(root, "results/current_fsf_v1/manuscript/source_data/figure5_go_source.tsv")
 ke_path <- file.path(root, "results/current_fsf_v1/manuscript/source_data/figure5_kegg_source.tsv")
@@ -51,10 +57,24 @@ stopifnot(coverage$total_unique_ids[coverage$source == "GO"] == length(unique(go
 stopifnot(sum(coverage$total_unique_ids[coverage$source == "KEGG"]) ==
           nrow(unique(ke[c("enrichment_type", "kegg_term")])))
 
+manifest <- rd(file.path(out, "semantic_source_manifest.tsv"))
+stopifnot(all(vapply(manifest$local_artifact, .fsf_validate_external_locator, logical(1L))))
+stopifnot(all(file.exists(vapply(manifest$local_artifact, .fsf_resolve_external_locator,
+  character(1L), root = external_root))))
+rejects <- c("/absolute/path", "C:/absolute/path", "\\\\server\\share\\file",
+  "current/../escape", "..", "folder\\file")
+stopifnot(all(vapply(rejects, function(locator)
+  inherits(try(.fsf_validate_external_locator(locator), silent = TRUE), "try-error"), logical(1L))))
+outside <- tempfile("fsf-outside-"); dir.create(outside)
+stopifnot(inherits(try(.fsf_external_locator_from_path(outside, external_root), silent = TRUE), "try-error"))
+unlink(outside, recursive = TRUE)
+
 tmp <- tempfile("semantic-authority-rebuild-")
 dir.create(tmp)
 status <- system2("Rscript", c("--vanilla", builder, raw, tmp),
-                  stdout = TRUE, stderr = TRUE)
+                  stdout = TRUE, stderr = TRUE,
+                  env = paste0("FSF_EXTERNAL_ARTIFACT_ROOT=", shQuote(external_root)))
+stopifnot(is.character(status), is.null(attr(status, "status")))
 stopifnot(file.exists(file.path(tmp, "semantic_output_hashes.tsv")))
 expected <- rd(file.path(out, "semantic_output_hashes.tsv"))
 rebuilt <- rd(file.path(tmp, "semantic_output_hashes.tsv"))

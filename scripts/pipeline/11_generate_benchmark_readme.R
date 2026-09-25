@@ -159,7 +159,7 @@ readme <- c(
 "",
 "`results/tables/FSF_v1_key_results_for_manuscript.tsv`",
 "",
-"`results/manuscript/benchmark_results_text.txt`",
+"`results/archive/pre_repair_manuscript/benchmark_results_text.txt`",
 "",
 "## Main Figures",
 "",

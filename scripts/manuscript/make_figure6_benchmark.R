@@ -10,8 +10,8 @@ suppressPackageStartupMessages({
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
 
-MAIN <- file.path(ROOT,"results/manuscript/figures/main")
-SUPP <- file.path(ROOT,"results/manuscript/figures/supplementary")
+MAIN <- file.path(ROOT,"results/archive/pre_repair_manuscript/figures/main")
+SUPP <- file.path(ROOT,"results/archive/pre_repair_manuscript/figures/supplementary")
 
 theme_pub <- function() {
   theme_bw(11) +

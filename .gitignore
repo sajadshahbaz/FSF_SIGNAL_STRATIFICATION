@@ -7,11 +7,8 @@ results/logs/
 logs/
 
 # Large manuscript supplementary tables
-results/manuscript/tables/supplementary/*.tsv
 
 # Archived/generated clutter
-results/manuscript/figures/archive/
-scripts/archive_figure_dev/
 
 # Common temporary files
 *.log

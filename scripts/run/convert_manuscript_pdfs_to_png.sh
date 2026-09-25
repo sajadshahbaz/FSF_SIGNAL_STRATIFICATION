@@ -12,8 +12,8 @@ if ! command -v pdftoppm >/dev/null 2>&1; then
 fi
 
 FIG_DIRS=(
-  "results/manuscript/figures/main"
-  "results/manuscript/figures/supplementary"
+  "results/archive/pre_repair_manuscript/figures/main"
+  "results/archive/pre_repair_manuscript/figures/supplementary"
 )
 
 for dir in "${FIG_DIRS[@]}"; do

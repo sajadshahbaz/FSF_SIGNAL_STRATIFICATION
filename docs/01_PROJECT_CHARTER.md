@@ -18,14 +18,18 @@ Given a set of candidate biological features, can reproducible signal behavior b
 
 ## Core Outputs
 
-FSF assigns each feature to one of four signal strata:
+FSF assigns each feature to one of four stability regions:
 
-* Stable Up
-* Stable Down
-* Stable Constant
-* Unstable
+* Low Stability
+* Transitional
+* Stable
+* Highly Stable
 
-These strata describe signal behavior rather than statistical significance.
+Above Low Stability, the dominant state (Up, Constant, or Down) combines with
+the region to produce a directional signal class. Low Stability remains one
+non-directional class, yielding ten signal classes in total. Stability regions
+and signal classes describe signal behavior rather than statistical
+significance.
 
 ## Input Requirements
 

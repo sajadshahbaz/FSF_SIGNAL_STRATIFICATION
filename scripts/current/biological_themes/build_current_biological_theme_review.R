@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 options(stringsAsFactors=FALSE)
 root<-normalizePath(getwd(),winslash="/",mustWork=TRUE)
+source(file.path(root,"scripts/current/build_current_external_artifact_manifests.R"))
 a<-commandArgs(trailingOnly=TRUE)
 out<-if(length(a))a[1] else file.path(root,"results/current_fsf_v1/manuscript/biological_themes")
 dir.create(out,recursive=TRUE,showWarnings=FALSE)
@@ -99,8 +100,11 @@ trace<-trace[c("evidence_row_id",names(packet),"candidate_theme_ids",
 wr(trace,file.path(out,"biological_theme_evidence_trace.tsv"))
 
 manifest<-rd(file.path(sem,"semantic_source_manifest.tsv"))
-obo<-manifest$local_artifact[manifest$resource_type=="go-basic OBO"]
-stopifnot(length(obo)==1,file.exists(obo),sha(obo)==manifest$sha256[manifest$resource_type=="go-basic OBO"])
+obo_locator<-manifest$local_artifact[manifest$resource_type=="go-basic OBO"]
+stopifnot(length(obo_locator)==1)
+external_root<-.fsf_external_root()
+obo<-.fsf_resolve_external_locator(obo_locator,external_root)
+stopifnot(sha(obo)==manifest$sha256[manifest$resource_type=="go-basic OBO"])
 parse_parents<-function(p){
  x<-readLines(p,warn=FALSE);s<-which(x=="[Term]");e<-c(s[-1]-1,length(x));ans<-list()
  for(i in seq_along(s)){b<-x[(s[i]+1):e[i]];id<-sub("^id: ","",b[startsWith(b,"id: ")][1]);pa<-sub(" !.*$","",sub("^is_a: ","",b[startsWith(b,"is_a: ")]));if(length(id)&&!is.na(id))ans[[id]]<-pa}

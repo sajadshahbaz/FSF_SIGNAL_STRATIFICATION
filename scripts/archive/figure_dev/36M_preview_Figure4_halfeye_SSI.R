@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
 INFILE <- file.path(ROOT, "results/real_data/class_annotation/FSF_condition_class_annotation_master.tsv")
 
-OUT <- file.path(ROOT, "results/manuscript/figures/supplementary")
+OUT <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/supplementary")
 dir.create(OUT, recursive = TRUE, showWarnings = FALSE)
 
 # Clean only this preview output

@@ -17,7 +17,7 @@ INPUT <- file.path(
 
 OUTDIR <- file.path(
   ROOT,
-  "results/manuscript/figures/supplementary"
+  "results/archive/pre_repair_manuscript/figures/supplementary"
 )
 
 dir.create(OUTDIR, recursive = TRUE, showWarnings = FALSE)

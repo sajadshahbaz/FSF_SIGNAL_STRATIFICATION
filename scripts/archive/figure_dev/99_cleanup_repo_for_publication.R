@@ -2,9 +2,9 @@
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
 
-main_fig <- file.path(ROOT, "results/manuscript/figures/main")
-supp_fig <- file.path(ROOT, "results/manuscript/figures/supplementary")
-archive <- file.path(ROOT, "results/manuscript/figures/archive/removed_before_publication_freeze")
+main_fig <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/main")
+supp_fig <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/supplementary")
+archive <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/archive/removed_before_publication_freeze")
 dir.create(archive, recursive = TRUE, showWarnings = FALSE)
 
 keep_main <- c(

@@ -1,5 +1,15 @@
 # Feature Signal Stratification (FSF)
 
+## Current FSF v1 authority
+
+The canonical current FSF v1 results are under `results/current_fsf_v1/`, with
+current manuscript products under `results/current_fsf_v1/manuscript/`. See
+[`docs/CURRENT_FSF_AUTHORITY.md`](docs/CURRENT_FSF_AUTHORITY.md) for the governing
+authority contract. Historical and legacy material is described by
+[`docs/FSF_LEGACY_PROVENANCE.md`](docs/FSF_LEGACY_PROVENANCE.md); it is
+provenance only and is not current FSF authority.
+
+
 FSF is a small, base-R package for describing how consistently a feature shows
 an Up, Down, or Constant response across repeated perturbations. It converts
 signed effects into state probabilities, calculates the Signal Stratification
@@ -17,7 +27,7 @@ from a source checkout with standard R tooling:
 
 ```sh
 R CMD build .
-R CMD INSTALL FSF_0.1.0.9000.tar.gz
+R CMD INSTALL FSF_0.1.0.tar.gz
 ```
 
 During repository development, `devtools::install()` may also be used if that
@@ -105,8 +115,9 @@ validation behavior, and examples.
 
 The installed package contains the reusable, dataset-independent FSF
 computational core and package tests. This repository additionally retains
-research provenance, validation workflows, historical pipelines, scientific
-authorities, and manuscript-generation material. Those repository resources
+research provenance, validation workflows, scientific authorities, and
+manuscript-generation material. Historical payload identities are retained in
+public checksum manifests. Those repository resources
 are not required for normal installed-package use and are excluded from the
 package source tarball.
 

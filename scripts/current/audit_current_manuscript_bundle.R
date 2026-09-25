@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+.bundle_script_root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
+source(file.path(.bundle_script_root, "scripts/current/build_current_external_artifact_manifests.R"))
+
 .bundle_sha256 <- function(path) {
   out <- system2(Sys.which("sha256sum"), path, stdout = TRUE)
   sub("[[:space:]].*$", "", out[[1L]])
@@ -47,12 +50,16 @@ audit_current_manuscript_bundle <- function(root) {
       "scientific_lock_sha256"
     )
     if (!identical(names(external), required_external) ||
-        anyDuplicated(external$relative_repository_path) ||
-        any(!file.exists(external$external_artifact_path))) {
+        anyDuplicated(external$relative_repository_path)) {
       stop("External artifact manifest is invalid.", call. = FALSE)
     }
-    observed_bytes <- file.info(external$external_artifact_path)$size
-    observed_hashes <- vapply(external$external_artifact_path, .bundle_sha256, character(1L))
+    external_root <- .fsf_external_root()
+    external$resolved_path <- vapply(
+      external$external_artifact_path, .fsf_resolve_external_locator,
+      character(1L), root = external_root
+    )
+    observed_bytes <- file.info(external$resolved_path)$size
+    observed_hashes <- vapply(external$resolved_path, .bundle_sha256, character(1L))
     if (!identical(as.numeric(observed_bytes), as.numeric(external$bytes)) ||
         !identical(unname(observed_hashes), external$sha256)) {
       stop("External artifact size or SHA-256 verification failed.", call. = FALSE)
@@ -63,7 +70,7 @@ audit_current_manuscript_bundle <- function(root) {
     if (file.exists(local)) return(local)
     if (!is.null(external)) {
       index <- match(relative, external$relative_repository_path)
-      if (!is.na(index)) return(external$external_artifact_path[[index]])
+      if (!is.na(index)) return(external$resolved_path[[index]])
     }
     NA_character_
   }

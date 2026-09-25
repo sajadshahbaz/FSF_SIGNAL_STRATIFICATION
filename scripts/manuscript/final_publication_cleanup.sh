@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT="/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
-MAIN="$ROOT/results/manuscript/figures/main"
-SUPP="$ROOT/results/manuscript/figures/supplementary"
-ARCH="$ROOT/results/manuscript/figures/archive/final_cleanup_removed"
+MAIN="$ROOT/results/archive/pre_repair_manuscript/figures/main"
+SUPP="$ROOT/results/archive/pre_repair_manuscript/figures/supplementary"
+ARCH="$ROOT/results/archive/pre_repair_manuscript/figures/archive/final_cleanup_removed"
 
 mkdir -p "$ARCH"
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Build evidence-only biological interpretation review tables. Historical
-# mappings are inventory records, never automatically accepted authorities.
+# Build current evidence-only biological interpretation review tables.
 
 .review_root <- file.path("results", "current_fsf_v1", "manuscript")
 .review_out <- file.path(.review_root, "review")
@@ -11,12 +10,13 @@
   readr::write_tsv(x, file.path(root, name), na = "NA")
 }
 
-.historical_rules <- function() {
-  add <- function(prefix, source, type, labels, rules, targets, mode = "manual") {
+.current_theme_rules <- function() {
+  add <- function(prefix, type, labels, rules, targets, mode = "manual") {
     data.frame(
-      historical_rule_id = sprintf("%s_%02d", prefix, seq_along(labels)),
-      source_script = source, rule_type = type, historical_label = labels,
-      mapping_or_rule = rules, historical_target = targets,
+      theme_rule_id = sprintf("%s_%02d", prefix, seq_along(labels)),
+      rule_definition_source =
+        "scripts/current/build_current_biological_review_package.R", rule_type = type, theme_label = labels,
+      mapping_or_rule = rules, theme_target = targets,
       manual_or_deterministic = mode,
       current_review_status = "REQUIRES_AUTHOR_REVIEW",
       stringsAsFactors = FALSE
@@ -62,56 +62,15 @@
     "ko047|map047|synapse|neuro|neuron", "ko049|map049|endocrine|hormone|insulin",
     "ko052|map052|cancer", "fallback:TRUE"
   )
-  collapse_labels <- c(
-    "Translation / protein targeting", "Genome maintenance / nuclear regulation",
-    "Cell cycle / division", "Proteostasis / protein turnover",
-    "Energy metabolism / redox regulation", "Stress signaling / signal transduction",
-    "Cell adhesion / extracellular interaction", "Development / morphogenesis",
-    "Neural / behavioral organization", "No clear enrichment",
-    "Weak / nonspecific enrichment", "Broad cellular regulation", "Mixed functional program"
-  )
-  collapse_rules <- c(
-    "translation|ribosome|ribosomal|protein targeting|secretion",
-    "dna repair|genome maintenance|replication|recombination|chromosome|nuclear organization|nucleotide excision|homologous recombination|mismatch repair",
-    "cell cycle|cell division|mitotic|meiosis|spindle|chromosome segregation",
-    "proteostasis|protein turnover|proteasome|ubiquitin|folding|chaperone",
-    "energy|metabolism|oxidation|oxidative|oxidoreduction|mitochond|carbon metabolism|oxidative phosphorylation",
-    "stress signaling|signal transduction|mapk|calcium|phosphatidylinositol|signaling",
-    "adhesion|junction|extracellular|ecm|cell adhesion",
-    "development|morphogenesis|tissue|structural remodeling|organ development",
-    "neural|neuron|synapse|axon|projection|behavior|movement|taxis|locomotion",
-    "both GO and KEGG report no significant enrichment",
-    "no significant plus broad/other/manual/unclassified", "broad/other/manual/unclassified",
-    "fallback:TRUE"
-  )
   rbind(
-    add("GO", "scripts/pipeline/32_GO_enrichment_interpretation_tables.R",
-        "GO_THEME_MAPPING", go_labels, go_rules, go_labels),
-    add("KEGG", "scripts/pipeline/34_build_biological_profiles.R",
-        "KEGG_THEME_MAPPING", kegg_labels, kegg_rules, kegg_labels),
-    add("PROFILE", "scripts/pipeline/35_curate_final_biological_themes.R",
-        "COMBINED_PROFILE_MAPPING", collapse_labels, collapse_rules, collapse_labels),
-    add("ARCH", "scripts/pipeline/35_curate_final_biological_themes.R",
-        "CONDITION_ARCHITECTURE", c("Highly stable-dominated architecture",
-          "Mixed stable-instabile architecture", "Multi-layer signal architecture",
-          "Unassigned architecture"),
-        c("condition in LT,OSM,HT", "condition == DES", "condition in UV,GAM", "fallback"),
-        c("LT;OSM;HT", "DES", "UV;GAM", "other")),
-    add("PRIORITY", "scripts/pipeline/35_curate_final_biological_themes.R",
-        "EVIDENCE_PRIORITY", c("low_no_clear", "high", "moderate", "limited", "low_fallback"),
-        c("theme == No clear enrichment", "GO >100 and KEGG >10", "GO >20 or KEGG >5",
-          "GO >0 or KEGG >0", "fallback"), c("low", "high", "moderate", "limited", "low")),
-    add("SUPPORT", "scripts/pipeline/34_build_biological_profiles.R",
-        "EVIDENCE_PRESENCE", c("both", "GO_only", "KEGG_only", "neither"),
-        c("GO>0 and KEGG>0", "GO>0 and KEGG=0", "GO=0 and KEGG>0", "GO=0 and KEGG=0"),
-        c("GO_and_KEGG_supported", "GO_supported", "KEGG_supported", "no_significant_enrichment"),
-        "deterministic"),
-    add("NARRATIVE34", "scripts/pipeline/34_build_biological_profiles.R",
-        "GENERATED_NARRATIVE", "signal-class profile sentence",
-        "condition/class shows profile; GO theme; KEGG theme", "manuscript_interpretation"),
-    add("NARRATIVE35", "scripts/pipeline/35_curate_final_biological_themes.R",
-        "GENERATED_NARRATIVE", "curated support sentence",
-        "condition/class is assigned theme based on evidence; support level", "final_interpretation")
+    add("GO", "GO_THEME_MAPPING", go_labels, go_rules, go_labels),
+    add(
+      "KEGG",
+      "KEGG_THEME_MAPPING",
+      kegg_labels,
+      kegg_rules,
+      kegg_labels
+    )
   )
 }
 
@@ -134,7 +93,7 @@
     out$current_matching_gene_set_count[[i]] <- length(unique(ids[hit]))
     out$current_matching_terms[[i]] <- if (length(matched)) paste(matched, collapse = ";") else NA_character_
     if (!startsWith(rule, "fallback:") && length(matched)) {
-      out$evidence_classification[[i]] <- "SUPPORTED_UNCHANGED"
+      out$evidence_classification[[i]] <- "CURRENT_MATCHING_EVIDENCE"
     } else if (!startsWith(rule, "fallback:")) {
       out$evidence_classification[[i]] <- "NO_CURRENT_EVIDENCE"
     }
@@ -190,9 +149,6 @@
 
 .architecture_review <- function(region, signal) {
   conditions <- c("DES", "GAM", "HT", "LT", "OSM", "UV")
-  historical <- c(DES = "Mixed stable-instabile architecture", GAM = "Multi-layer signal architecture",
-                  HT = "Highly stable-dominated architecture", LT = "Highly stable-dominated architecture",
-                  OSM = "Highly stable-dominated architecture", UV = "Multi-layer signal architecture")
   do.call(rbind, lapply(conditions, function(cond) {
     x <- region[region$condition == cond, ]
     dominant <- x$stability_region[x$region_count == max(x$region_count)]
@@ -200,14 +156,12 @@
     s <- signal[signal$condition == cond, ]
     dir <- aggregate(class_count ~ dominant_state, s, sum)
     data.frame(condition = cond,
-      historical_architecture_label = historical[[cond]],
       dominant_regions = paste(dominant, collapse = ";"),
       minor_regions = if (length(minor)) paste(minor, collapse = ";") else "none",
       transitional_count = x$region_count[x$stability_region == "Transitional"],
       directional_composition = paste0(dir$dominant_state, "=", dir$class_count, collapse = ";"),
       directly_supported = paste0("observed region counts: ", paste0(x$stability_region, "=", x$region_count, collapse = ";")),
       not_supported = "causal mechanism, biological activation, adaptation, or fitness effect",
-      historical_profile_status = if (cond == "DES") "SUPPORTED_BUT_LABEL_UPDATE" else if (cond == "UV") "PARTIALLY_SUPPORTED" else "AMBIGUOUS_REQUIRES_AUTHOR_REVIEW",
       review_status = "REQUIRES_AUTHOR_REVIEW", author_decision = NA_character_, author_notes = NA_character_,
       stringsAsFactors = FALSE)
   }))
@@ -223,7 +177,6 @@
   }
   reps$current_go_supporting_term_count <- membership_count(reps$feature_id, go)
   reps$current_kegg_supporting_term_count <- membership_count(reps$feature_id, kegg)
-  reps$historical_selection_reason <- "frozen annotated Stable/Highly Stable directional representative ranking"
   reps$current_evidence_status <- ifelse(
     reps$current_go_supporting_term_count + reps$current_kegg_supporting_term_count > 0,
     "RETAIN", "RETAIN_WITH_REVISED_RATIONALE")
@@ -243,7 +196,7 @@ build_current_biological_review_package <- function(root = .review_out) {
   kegg <- kegg_all[kegg_all$gene_set_id %in% main$gene_set_id, ]
   go_review <- .complete_evidence(.compact_evidence(go, "go_term", 10L), main)
   kegg_review <- .complete_evidence(.compact_evidence(kegg, "kegg_term", 10L), main)
-  rules <- .historical_rules()
+  rules <- .current_theme_rules()
   go_rules <- .rule_evidence(rules, go$go_term, go$gene_set_id, "GO_THEME_MAPPING")
   kegg_rules <- .rule_evidence(rules, kegg$kegg_term, kegg$gene_set_id, "KEGG_THEME_MAPPING")
 
@@ -251,22 +204,8 @@ build_current_biological_review_package <- function(root = .review_out) {
   kg_sum <- .evidence_summary(kegg, "kegg_term", "KEGG")
   names(go_sum)[2L] <- "current_GO_evidence_summary"
   names(kg_sum)[2L] <- "current_KEGG_evidence_summary"
-  historical <- readr::read_tsv(file.path("results", "manuscript", "tables", "main",
-                                           "Table_SignalClass_Biology_CURATED.tsv"), show_col_types = FALSE)
-  historical$key <- paste(toupper(historical$condition),
-    ifelse(historical$stability_level == "instable", "Low Stability",
-      ifelse(historical$stability_level == "weakly_stable_transitional", "Transitional",
-        ifelse(historical$stability_level == "highly_stable", "Highly Stable", "Stable"))),
-    ifelse(historical$dominant_state == "mixed", "tied", historical$dominant_state), sep = "\r")
-  main$key <- paste(main$condition, main$stability_region, main$dominant_state, sep = "\r")
-  hi <- match(main$key, historical$key)
   profile <- main[c("condition", "stability_region", "dominant_state", "signal_class", "gene_set_id")]
   profile$region_or_class <- ifelse(is.na(profile$signal_class), profile$stability_region, profile$signal_class)
-  profile$historical_profile <- historical$final_biological_theme[hi]
-  profile$historical_GO_theme <- historical$GO_theme[hi]
-  profile$historical_KEGG_theme <- historical$KEGG_theme[hi]
-  profile$historical_GO_significant_count <- historical$significant_GO_terms_FDR005[hi]
-  profile$historical_KEGG_significant_count <- historical$significant_KEGG_terms_FDR005[hi]
   profile <- merge(profile, go_sum, by = "gene_set_id", all.x = TRUE, sort = FALSE)
   profile <- merge(profile, kg_sum, by = "gene_set_id", all.x = TRUE, sort = FALSE)
   profile$current_GO_evidence_summary[is.na(profile$current_GO_evidence_summary)] <- "GO significant terms=0"
@@ -276,25 +215,6 @@ build_current_biological_review_package <- function(root = .review_out) {
   kg_n <- table(kegg$gene_set_id)[profile$gene_set_id]; kg_n[is.na(kg_n)] <- 0
   profile$current_GO_significant_count <- as.integer(go_n)
   profile$current_KEGG_significant_count <- as.integer(kg_n)
-  compare_count <- function(old, current) {
-    ifelse(is.na(old), "NO_HISTORICAL_COMPARATOR",
-      ifelse(old == 0 & current == 0, "ABSENT_UNCHANGED",
-        ifelse(old == 0 & current > 0, "NEW_EVIDENCE",
-          ifelse(old > 0 & current == 0, "LOST_EVIDENCE",
-            ifelse(current > old, "STRENGTHENED_TERM_COUNT",
-              ifelse(current < old, "WEAKENED_TERM_COUNT", "RETAINED_TERM_COUNT"))))))
-  }
-  profile$GO_evidence_change <- compare_count(profile$historical_GO_significant_count, profile$current_GO_significant_count)
-  profile$KEGG_evidence_change <- compare_count(profile$historical_KEGG_significant_count, profile$current_KEGG_significant_count)
-  profile$theme_evidence_change <- paste0("GO_", profile$GO_evidence_change, ";KEGG_", profile$KEGG_evidence_change)
-  profile$historical_profile_status <- ifelse(
-    profile$condition == "UV", "AMBIGUOUS_REQUIRES_AUTHOR_REVIEW",
-    ifelse(go_n + kg_n == 0 & profile$historical_GO_significant_count + profile$historical_KEGG_significant_count > 0,
-      "NO_LONGER_SUPPORTED",
-      ifelse(go_n + kg_n == 0, "NO_CURRENT_EVIDENCE",
-        ifelse(profile$stability_region == "Low Stability", "SUPPORTED_BUT_LABEL_UPDATE",
-          ifelse(profile$GO_evidence_change == "RETAINED_TERM_COUNT" & profile$KEGG_evidence_change == "RETAINED_TERM_COUNT",
-            "SUPPORTED_UNCHANGED", "PARTIALLY_SUPPORTED")))))
   profile$review_status <- "REQUIRES_AUTHOR_REVIEW"
   profile$author_decision <- NA_character_
   profile$author_notes <- NA_character_
@@ -305,7 +225,6 @@ build_current_biological_review_package <- function(root = .review_out) {
   reps <- .representative_review(go_all, kegg_all)
 
   dir.create(root, recursive = TRUE, showWarnings = FALSE)
-  .write_review(rules, "historical_interpretation_inventory.tsv", root)
   .write_review(go_review, "current_go_evidence.tsv", root)
   .write_review(kegg_review, "current_kegg_evidence.tsv", root)
   .write_review(go_rules, "go_theme_review.tsv", root)
@@ -315,30 +234,30 @@ build_current_biological_review_package <- function(root = .review_out) {
   .write_review(architecture, "condition_architecture_review.tsv", root)
   .write_review(reps, "representative_feature_review.tsv", root)
 
-  statuses <- table(profile$historical_profile_status)
   summary <- c(
-    "# FSF biological interpretation review package", "",
-    "This directory contains evidence views and historical-rule candidates for author review. It contains no accepted biological theme authority and no final manuscript prose.", "",
+    "# FSF biological interpretation review package",
+    "Current FSF evidence views and theme-mapping candidates for author review.",
     paste0("- Current main-class gene sets reviewed: ", nrow(main)),
-    paste0("- Historical interpretation rules inventoried: ", nrow(rules)),
-    paste0("- GO historical mappings with current matching evidence: ", sum(go_rules$current_matching_term_count > 0)),
-    paste0("- KEGG historical mappings with current matching evidence: ", sum(kegg_rules$current_matching_term_count > 0)),
-    paste0("- Profile status counts: ", paste(names(statuses), as.integer(statuses), sep = "=", collapse = "; ")), "",
-    "## Historical mapping evidence", "",
-    paste0("- GO mappings with matching current terms: ", paste(go_rules$historical_label[go_rules$evidence_classification == "SUPPORTED_UNCHANGED"], collapse = "; ")),
-    paste0("- KEGG mappings with matching current terms: ", paste(kegg_rules$historical_label[kegg_rules$evidence_classification == "SUPPORTED_UNCHANGED"], collapse = "; ")),
-    paste0("- Historical mappings without current matches: ", paste(kegg_rules$historical_label[kegg_rules$evidence_classification == "NO_CURRENT_EVIDENCE"], collapse = "; ")),
-    "- Broad/default and combined-profile mappings remain manual biological judgments even where their source terms are present.", "",
-    "## Condition review", "",
-    "- DES, GAM, and LT contain Low Stability rows requiring the locked label migration; their non-UV memberships are unchanged.",
-    "- HT and OSM are entirely Highly Stable in the region authority; biological wording still requires author review.",
-    "- Statistical count differences versus historical curated tables are recorded per gene set in combined_profile_review.tsv.", "",
-    "## UV review gate", "",
-    "UV is Transitional-dominated (6,697 of 15,187); its historical profiles remain REQUIRES_AUTHOR_REVIEW because current class membership differs materially.", "",
-    "## Figure 5 candidates", "",
-    "Candidate mappings are the GO/KEGG rules marked SUPPORTED_UNCHANGED in the review tables. Presence of matching enriched terms does not constitute author acceptance of a theme.", "",
-    "## Figure 7 candidate structure", "",
-    "Current condition architecture -> current signal class -> GO/KEGG statistical evidence -> author-reviewed theme/profile. Causal or adaptive language is outside the automatic evidence layer.", "",
+    paste0("- GO mappings with current matching evidence: ",
+      sum(go_rules$current_matching_term_count > 0)),
+    paste0("- KEGG mappings with current matching evidence: ",
+      sum(kegg_rules$current_matching_term_count > 0)),
+    "## Current mapping evidence",
+    paste0("- GO: ", paste(go_rules$theme_label[
+      go_rules$evidence_classification == "CURRENT_MATCHING_EVIDENCE"
+    ], collapse = "; ")),
+    paste0("- KEGG: ", paste(kegg_rules$theme_label[
+      kegg_rules$evidence_classification == "CURRENT_MATCHING_EVIDENCE"
+    ], collapse = "; ")),
+    paste0("- KEGG without current matches: ", paste(kegg_rules$theme_label[
+      kegg_rules$evidence_classification == "NO_CURRENT_EVIDENCE"
+    ], collapse = "; ")),
+    "Mapping evidence does not constitute author acceptance of a biological theme.",
+    "DES, GAM, and LT contain Low Stability rows in the current region authority.",
+    "HT and OSM are entirely Highly Stable in the current region authority.",
+    "UV current biological profiles require author review.",
+    paste0("Current condition architecture -> current signal class -> ",
+      "GO/KEGG statistical evidence -> author-reviewed theme/profile."),
     "Author decisions and notes are intentionally blank."
   )
   writeLines(summary, file.path(root, "review_summary.md"), useBytes = TRUE)
@@ -347,19 +266,91 @@ build_current_biological_review_package <- function(root = .review_out) {
 }
 
 audit_current_biological_review_package <- function(root = .review_out) {
-  required <- c("historical_interpretation_inventory.tsv", "current_go_evidence.tsv",
-    "current_kegg_evidence.tsv", "go_theme_review.tsv", "kegg_theme_review.tsv",
-    "combined_profile_review.tsv", "uv_specific_review.tsv", "condition_architecture_review.tsv",
-    "representative_feature_review.tsv", "review_summary.md")
-  if (!all(file.exists(file.path(root, required)))) stop("Review package is incomplete.")
-  inventory <- readr::read_tsv(file.path(root, required[[1L]]), show_col_types = FALSE)
+  required <- c(
+    "current_go_evidence.tsv",
+    "current_kegg_evidence.tsv",
+    "go_theme_review.tsv",
+    "kegg_theme_review.tsv",
+    "combined_profile_review.tsv",
+    "uv_specific_review.tsv",
+    "condition_architecture_review.tsv",
+    "representative_feature_review.tsv",
+    "review_summary.md"
+  )
+  if (!all(file.exists(file.path(root, required)))) {
+    stop("Review package is incomplete.")
+  }
+  go_themes <- readr::read_tsv(
+    file.path(root, "go_theme_review.tsv"),
+    show_col_types = FALSE
+  )
+  kegg_themes <- readr::read_tsv(
+    file.path(root, "kegg_theme_review.tsv"),
+    show_col_types = FALSE
+  )
+  go_evidence <- readr::read_tsv(
+    file.path(root, "current_go_evidence.tsv"),
+    show_col_types = FALSE
+  )
+  kegg_evidence <- readr::read_tsv(
+    file.path(root, "current_kegg_evidence.tsv"),
+    show_col_types = FALSE
+  )
   profile <- readr::read_tsv(file.path(root, "combined_profile_review.tsv"), show_col_types = FALSE)
   uv <- readr::read_tsv(file.path(root, "uv_specific_review.tsv"), show_col_types = FALSE)
   architecture <- readr::read_tsv(file.path(root, "condition_architecture_review.tsv"), show_col_types = FALSE)
   reps <- readr::read_tsv(file.path(root, "representative_feature_review.tsv"), show_col_types = FALSE)
-  if (anyDuplicated(inventory$historical_rule_id) || nrow(profile) != 40L ||
-      anyDuplicated(profile$gene_set_id) || nrow(uv) != 13L || nrow(architecture) != 6L ||
-      anyDuplicated(architecture$condition)) stop("Review key coverage failed.")
+  theme_schema <- c(
+    "theme_rule_id",
+    "rule_definition_source",
+    "theme_label",
+    "theme_target"
+  )
+
+  if (!all(theme_schema %in% names(go_themes)) ||
+      !all(theme_schema %in% names(kegg_themes)) ||
+      !("gene_set_id" %in% names(profile)) ||
+      !("condition" %in% names(architecture))) {
+    stop("Review schema coverage failed.")
+  }
+
+  if (anyDuplicated(go_themes$theme_rule_id) ||
+      anyDuplicated(kegg_themes$theme_rule_id) ||
+      nrow(profile) != 40L ||
+      anyDuplicated(profile$gene_set_id) ||
+      length(unique(go_evidence$gene_set_id)) != 40L ||
+      length(unique(kegg_evidence$gene_set_id)) != 40L ||
+      nrow(uv) != 13L ||
+      nrow(architecture) != 6L ||
+      anyDuplicated(architecture$condition)) {
+    stop("Review key coverage failed.")
+  }
+
+  current_tables <- list(
+    go_themes,
+    kegg_themes,
+    profile,
+    architecture,
+    reps
+  )
+
+  has_historical_fields <- vapply(
+    current_tables,
+    function(x) any(startsWith(names(x), "historical_")),
+    logical(1L)
+  )
+
+  evidence_change_fields <- c(
+    "GO_evidence_change",
+    "KEGG_evidence_change",
+    "theme_evidence_change"
+  )
+
+  if (any(has_historical_fields) ||
+      any(evidence_change_fields %in% names(profile))) {
+    stop("Current review tables contain obsolete comparison fields.")
+  }
+
   for (x in list(profile, architecture, reps)) {
     if (!all(c("author_decision", "author_notes") %in% names(x)) ||
         any(!is.na(x$author_decision)) || any(!is.na(x$author_notes))) {

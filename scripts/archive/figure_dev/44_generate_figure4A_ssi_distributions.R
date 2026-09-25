@@ -16,12 +16,12 @@ INPUT <- file.path(
 
 OUTDIR <- file.path(
   ROOT,
-  "results/manuscript/figures/main"
+  "results/archive/pre_repair_manuscript/figures/main"
 )
 
 ARCHIVE <- file.path(
   ROOT,
-  "results/manuscript/figures/archive/Figure4_replaced_versions"
+  "results/archive/pre_repair_manuscript/figures/archive/Figure4_replaced_versions"
 )
 
 dir.create(OUTDIR, recursive = TRUE, showWarnings = FALSE)

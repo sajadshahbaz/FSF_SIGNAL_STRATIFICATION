@@ -9,8 +9,8 @@ suppressPackageStartupMessages({
 })
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
-OUT  <- file.path(ROOT, "results/manuscript/figures/main")
-LOG  <- file.path(ROOT, "results/manuscript/logs/36E_fix_publication_figures.log")
+OUT  <- file.path(ROOT, "results/archive/pre_repair_manuscript/figures/main")
+LOG  <- file.path(ROOT, "results/archive/pre_repair_manuscript/logs/36E_fix_publication_figures.log")
 
 dir.create(OUT, recursive = TRUE, showWarnings = FALSE)
 

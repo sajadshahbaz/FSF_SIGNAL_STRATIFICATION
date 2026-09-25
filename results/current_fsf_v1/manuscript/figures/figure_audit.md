@@ -52,16 +52,18 @@ Figures 2-6 and S1-S4 were generated deterministically from frozen current autho
 - Validation: PASS.
 
 ## Supplementary Figure S1
-- Authority: frozen representative-feature review authority.
-- Historical design template assessed: class-size scatter.
-- Template simplification: class-size is unavailable, so only annotation coverage is displayed.
-- Selection remains unchanged.
+- Authority: governed frozen annotation master joined to current FSF feature metrics.
+- Population: all 15,187 unique analyzed features, reduced to one invariant annotation record per feature.
+- Panel A: mutually exclusive annotation-source support: 0 sources = 1,720 (11.3%); 1 source = 2,214 (14.6%); 2 sources = 1,848 (12.2%); 3 sources = 9,405 (61.9%).
+- Panel B: overlapping resource coverage: eggNOG = 9,811 (64.6%); InterPro = 12,480 (82.2%); Pfam = 11,834 (77.9%).
+- Scale: both panels use the common 0–100% feature-proportion scale.
 - Validation: PASS.
 
 ## Supplementary Figure S2
-- Authority: `figureS2_tau_source.tsv`.
-- Historical analytical design rejected.
-- Historical issue corrected: the invalid tau-against-tau mapping is replaced by x = `tau` and y = `value`, faceted by `metric`.
+- Authority: `figureS2_tau_source.tsv`; source coordinates are frozen and unchanged.
+- Endpoint: mean Signal Stratification Index across tau = 0.25, 0.50, 0.75, and 1.00.
+- Generator labels describe synthetic distributions, not current FSF classes; all five scenarios remain distinct.
+- Stability Deviation equals 1 - SSI and is retained only as an auxiliary compatibility quantity, not plotted as an independent endpoint.
 - Validation: PASS.
 
 ## Supplementary Figure S3

@@ -1,3 +1,4 @@
+^\.git$
 ^\.Rbuildignore$
 ^\.gitignore$
 ^ROOT_STRUCTURE\.txt$

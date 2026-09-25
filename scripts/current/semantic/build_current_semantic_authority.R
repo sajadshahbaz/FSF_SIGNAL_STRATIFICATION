@@ -1,8 +1,23 @@
 #!/usr/bin/env Rscript
 options(stringsAsFactors = FALSE)
 root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
+source(file.path(root, "scripts/current/build_current_external_artifact_manifests.R"))
 a <- commandArgs(trailingOnly = TRUE)
-raw_dir <- if (length(a)) a[1] else "/media/saji/5E06441D0643F5152/FSF_R_PACKAGE_ARTIFACTS/current_fsf_v1/manuscript/semantic_authority/raw"
+raw_suffix <- "current_fsf_v1/manuscript/semantic_authority/raw"
+declared_root <- Sys.getenv("FSF_EXTERNAL_ARTIFACT_ROOT", unset = "")
+if (length(a)) {
+  raw_dir <- normalizePath(a[1], winslash = "/", mustWork = TRUE)
+  external_root <- if (nzchar(declared_root)) {
+    .fsf_external_root(declared_root)
+  } else {
+    .fsf_derive_external_root(raw_dir, raw_suffix)
+  }
+  raw_locator <- .fsf_external_locator_from_path(raw_dir, external_root)
+} else {
+  external_root <- .fsf_external_root(declared_root)
+  raw_locator <- raw_suffix
+  raw_dir <- .fsf_resolve_external_locator(raw_locator, external_root)
+}
 out_dir <- if (length(a) > 1) a[2] else file.path(root, "results/current_fsf_v1/manuscript/semantic_authority")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 date <- "2026-09-19"; gov <- "releases/2026-07-26"
@@ -90,7 +105,7 @@ manifest<-data.frame(source=c("Gene Ontology",rep("KEGG",6)),
  resource_type=c("go-basic OBO","KO descriptions","PATHWAY map descriptions","PATHWAY ko descriptions","KEGG database metadata","KO metadata","PATHWAY metadata"),
  retrieval_date=date,resource_version_or_release=c(gov,kov,kpv,kpv,"KEGG 2026-09-18",kov,kpv),
  source_location=c("https://purl.obolibrary.org/obo/go/go-basic.obo","https://rest.kegg.jp/list/ko","https://rest.kegg.jp/list/pathway","https://rest.kegg.jp/list/pathway/ko","https://rest.kegg.jp/info/kegg","https://rest.kegg.jp/info/ko","https://rest.kegg.jp/info/pathway"),
- local_artifact=unname(rp),file_size=as.numeric(file.info(rp)$size),sha256=unname(oh),
+ local_artifact=unname(vapply(rp,.fsf_external_locator_from_path,character(1L),root=external_root)),file_size=as.numeric(file.info(rp)$size),sha256=unname(oh),
  identifier_type=c("GO","KO","PATHWAY map","PATHWAY ko","metadata","metadata","metadata"),
  notes=c("Official GO basic ontology; version from OBO header","Official KEGG REST list; split at first semicolon","Official KEGG REST map pathway list","Official KEGG REST ko pathway list","Official KEGG REST release metadata","Official KEGG REST KO metadata","Official KEGG REST PATHWAY metadata"))
 sets<-unique(rbind(go[c("condition","stability_region")],ke[c("condition","stability_region")]))

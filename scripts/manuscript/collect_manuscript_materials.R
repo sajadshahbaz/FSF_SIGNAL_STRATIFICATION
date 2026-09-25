@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 
 ROOT <- "/media/saji/5E06441D0643F5152/FSF_SIGNAL_STRATIFICATION"
 
-MANUSCRIPT_DIR <- file.path(ROOT, "results/manuscript")
+MANUSCRIPT_DIR <- file.path(ROOT, "results/archive/pre_repair_manuscript")
 
 DIRS <- c(
   "figures/main",
