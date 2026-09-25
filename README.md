@@ -67,8 +67,6 @@ R CMD build .
 R CMD INSTALL FSF_0.1.0.tar.gz
 ```
 
-FSF is not claimed to be available from CRAN.
-
 ## Input
 
 The minimum input is a long-form data frame with one row per observed
@@ -86,6 +84,8 @@ strata are explicitly supplied through `group_cols`.
 ## Minimal analysis
 
 ```r
+library(FSF)
+
 effects <- data.frame(
   condition = rep(c("control", "treated"), each = 6),
   feature_id = rep(rep(c("f1", "f2"), each = 3), 2),
