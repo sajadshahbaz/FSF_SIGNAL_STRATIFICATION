@@ -10,6 +10,19 @@ authority contract. Historical and legacy material is described by
 provenance only and is not current FSF authority.
 
 
+## Reproducible computational release
+
+The validated computational release is **FSF 0.1.0** at commit:
+
+```text
+247e038cc2c206886b03058b1845b42023076033
+```
+
+This commit is the frozen computational release underlying the current FSF v1
+manuscript analyses and results. Later documentation-only commits do not define
+a new computational or scientific release.
+
+
 FSF is a small, base-R package for describing how consistently a feature shows
 an Up, Down, or Constant response across repeated perturbations. It converts
 signed effects into state probabilities, calculates the Signal Stratification
@@ -32,6 +45,29 @@ R CMD INSTALL FSF_0.1.0.tar.gz
 
 During repository development, `devtools::install()` may also be used if that
 development tool is already available.
+
+### Installation from GitHub
+
+Install the exact frozen commit with `remotes`:
+
+```r
+remotes::install_github(
+  "sajadshahbaz/FSF_SIGNAL_STRATIFICATION",
+  ref = "247e038cc2c206886b03058b1845b42023076033"
+)
+```
+
+Or clone, check out, build, and install that commit with standard tools:
+
+```sh
+git clone https://github.com/sajadshahbaz/FSF_SIGNAL_STRATIFICATION.git
+cd FSF_SIGNAL_STRATIFICATION
+git checkout 247e038cc2c206886b03058b1845b42023076033
+R CMD build .
+R CMD INSTALL FSF_0.1.0.tar.gz
+```
+
+FSF is not claimed to be available from CRAN.
 
 ## Input
 
@@ -67,6 +103,19 @@ classified
 architecture <- fsf_architecture(classified, condition_col = "condition")
 architecture
 ```
+
+`fsf_analyze()` returns one row per Signal Identity. With `group_cols`, those
+columns appear first, followed by `feature_id`, `n_perturbations`, `n_up`,
+`n_down`, `n_const`, `p_up`, `p_down`, `p_const`, `dominant_state`, `ssi`,
+`stability_region`, `signal_class`, and `stability_deviation`. The three state
+probabilities describe the observed Up, Down, and Constant proportions; SSI is
+their maximum; `dominant_state` records the maximizing state (or `tied`);
+`stability_region` records the SSI interval; and `signal_class` combines region
+and direction only above the Low-Stability boundary.
+
+`fsf_architecture()` returns all ten current signal classes for every condition,
+including zero-count classes, as the condition column, `signal_class`,
+`class_count`, and `class_proportion`.
 
 `tau` is the positive magnitude threshold used to assign directional states:
 
@@ -120,6 +169,103 @@ manuscript-generation material. Historical payload identities are retained in
 public checksum manifests. Those repository resources
 are not required for normal installed-package use and are excluded from the
 package source tarball.
+
+## Reproducing the FSF v1 manuscript analysis
+
+Package reproducibility and manuscript reproducibility have different scopes:
+
+- **Package reproducibility:** the dataset-independent R package can be built,
+  installed, and used without the manuscript data or workflows.
+- **Manuscript reproducibility:** the governed workflows under
+  `scripts/current/`, current authorities under `results/current_fsf_v1/`, and
+  the external artifacts below are required. Material under archive or legacy
+  locations is provenance only and is not a current scientific input.
+
+Run current workflow entrypoints from the repository root. Set portable
+locators rather than embedding a machine-specific path:
+
+```sh
+export FSF_EXTERNAL_ARTIFACT_ROOT=/path/to/fsf-external-artifacts
+export FSF_ANNOTATION_MASTER=/path/to/FSF_v1_annotation_master.tsv
+
+Rscript scripts/current/build_current_external_artifact_manifests.R
+Rscript scripts/current/audit_current_manuscript_bundle.R \
+  results/current_fsf_v1/manuscript
+Rscript scripts/current/figures/build_current_manuscript_figures.R
+
+FSF_REPO_ROOT="$PWD" \
+FSF_ANNOTATION_MASTER="$FSF_ANNOTATION_MASTER" \
+python3 scripts/current/build_current_biological_validation.py --build
+
+FSF_REPO_ROOT="$PWD" \
+FSF_ANNOTATION_MASTER="$FSF_ANNOTATION_MASTER" \
+python3 scripts/current/build_current_biological_validation.py --verify
+```
+
+The manifest builder validates locked sizes, SHA-256 values, and schemas before
+writing the governed manifests. The manuscript audit requires the manuscript
+bundle root as its sole argument. The full figure build requires the frozen
+annotation master; focused figure modes and their requirements are documented
+by the figure builder's usage check. Biological validation uses the frozen FSF
+feature authority plus the annotation master, and `--verify` rebuilds in an
+isolated temporary location to detect output drift. These are the existing
+entrypoints, not a replacement pipeline; see
+[`docs/CURRENT_FSF_AUTHORITY.md`](docs/CURRENT_FSF_AUTHORITY.md) and the current
+workflow scripts for their full contracts.
+
+### External artifacts
+
+The following current authorities are intentionally not stored as Git blobs.
+The first three are relative to `FSF_EXTERNAL_ARTIFACT_ROOT`; the annotation
+master is supplied directly through `FSF_ANNOTATION_MASTER`.
+
+| Artifact | Purpose | Expected SHA-256 | How FSF locates it | Included in Git? |
+|---|---|---|---|---|
+| `current_fsf_v1/manuscript/enrichment/go/go_enrichment_all.tsv` | Complete GO enrichment result authority | `1b991db9a178bead03adf3fd96246d9b8e4b08e40828af300d29aca75b260411` | Relative to `FSF_EXTERNAL_ARTIFACT_ROOT` | No |
+| `current_fsf_v1/manuscript/enrichment/kegg/kegg_enrichment_all.tsv` | Complete combined KO/PATHWAY enrichment result authority | `bcf428a508975b0ffb81324852243adcf8cc24f136de5ff63bb266a10150fa32` | Relative to `FSF_EXTERNAL_ARTIFACT_ROOT` | No |
+| `current_fsf_v1/representative_features/current_fsf_stable_signal_annotated_catalog.tsv` | Stable/Highly Stable candidate catalog joined to biological annotation | `2002148dcaa38a1b4e84c173d78e8aa34495a2dbb98f0fe5738b1ef0445fabdc` | Relative to `FSF_EXTERNAL_ARTIFACT_ROOT` | No |
+| `FSF_v1_annotation_master.tsv` | Frozen feature-level biological annotation authority | `25627cfcaf544dd2793d9fd2462772d9cb76f4728bbcab8c9d29599520f5d584` | Exact path in `FSF_ANNOTATION_MASTER` | No |
+
+The repository does not currently document a public download location for
+these large artifacts. Their expected identities are governed by
+`results/current_fsf_v1/manuscript/audit/external_artifacts.tsv`,
+`results/current_fsf_v1/representative_features/LARGE_ARTIFACT_MANIFEST.tsv`,
+and [`docs/FSF_V1_ANNOTATION_AUTHORITY.md`](docs/FSF_V1_ANNOTATION_AUTHORITY.md).
+No DOI, release asset, or public archive locator is claimed until one is
+assigned and verified.
+
+### Manuscript output locations
+
+- `results/current_fsf_v1/` contains the current numerical FSF authorities and
+  governed derived products.
+- `results/current_fsf_v1/manuscript/` is the current manuscript authority
+  root.
+- `results/current_fsf_v1/manuscript/source_data/` contains frozen figure source
+  tables.
+- `results/current_fsf_v1/manuscript/figures/` contains the figure manifest,
+  audit, and authoritative main and supplementary figure outputs.
+- `results/current_fsf_v1/manuscript/biological_validation/` contains the
+  deterministic candidate registry, explicit literature/author decisions,
+  validated outputs, summary, and manifest.
+
+### Release validation
+
+The exact frozen computational commit above passed these release gates:
+
+| Check | Result |
+|---|---|
+| `R CMD build` | PASS |
+| `R CMD check` | PASS: 0 errors, 0 warnings, 0 notes |
+| Fresh isolated source installation | PASS |
+| Fresh-session `library(FSF)` | PASS |
+| Namespace loading and public API visibility | PASS |
+| Installed examples | PASS |
+| Installed test suite | PASS: 123 passed, 0 failed, 0 warnings, 0 skipped |
+| `FSF_0_TO_100_RELEASE_GATE` | PASS |
+
+This validation applies to
+`247e038cc2c206886b03058b1845b42023076033`; a subsequent README-only commit
+does not change that frozen computational identity.
 
 ## Citation
 
